@@ -17,7 +17,9 @@ class CreateCategoriesTable extends Migration
             $table->id();
             $table->integer('parent_id')->default(0);
             $table->integer('level')->default(1);
+            $table->string('section')->default('my_harties');
             $table->string('name');
+            $table->string('image')->nullable();
             $table->string('status');
             $table->softDeletes();
             $table->timestamps();

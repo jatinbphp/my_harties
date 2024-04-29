@@ -32,7 +32,6 @@ class SubCategoryController extends Controller
                     $row['section_title'] = 'Sub Category';
                     return view('admin.common.action-buttons', $row);
                 })
-
                 ->rawColumns(['category','action'])
                 ->make(true);
         }
@@ -43,7 +42,7 @@ class SubCategoryController extends Controller
     public function create()
     {
         $data['menu'] = "Sub Category";
-        $data['category'] = Category::where('parent_id',0)->where('status','active')->pluck('name','id')->prepend('Please Select','');
+        $data['category'] = Category::where('parent_id',0)->where('status','active')->orderBy('name')->pluck('name','id')->prepend('Please Select','');
         return view("admin.sub_category.create",$data);
     }
 
@@ -52,6 +51,9 @@ class SubCategoryController extends Controller
         $input = $request->all();
         $input['level'] = 2;
         $input['parent_id'] = $request['category'];
+        if($photo = $request->file('image')){
+            $input['image'] = $this->fileMove($photo,'category');
+        }
         Category::create($input);
 
         \Session::flash('success', 'Sub category has been inserted successfully!');
@@ -67,7 +69,7 @@ class SubCategoryController extends Controller
     {
         $data['menu'] = "Sub Category";
         $data['sub_category'] = Category::where('id',$id)->first();
-        $data['category'] = Category::where('parent_id',0)->where('status','active')->pluck('name','id')->prepend('Please Select','');
+        $data['category'] = Category::where('parent_id',0)->where('status','active')->orderBy('name')->pluck('name','id')->prepend('Please Select','');
         return view('admin.sub_category.edit',$data);
     }
 
@@ -75,6 +77,12 @@ class SubCategoryController extends Controller
     {
         $input = $request->all();
         $input['parent_id'] = $request['category'];
+        if($photo = $request->file('image')){
+            if (!empty($sub_category['image']) && file_exists($sub_category['image'])) {
+                unlink($sub_category['image']);
+            }
+            $input['image'] = $this->fileMove($photo,'category');
+        }
         $sub_category->update($input);
 
         \Session::flash('success','Sub category has been updated successfully!');
@@ -83,9 +91,13 @@ class SubCategoryController extends Controller
 
     public function destroy($id)
     {
-        $categorys = Category::findOrFail($id);
-        if(!empty($categorys)){
-            $categorys->delete();
+        $category = Category::findOrFail($id);
+        if(!empty($category)){
+            $file_path=storage_path('app/public/'.$category->image);
+            if (!empty($category['image']) && file_exists($category['image'])) {
+                unlink($category['image']);
+            }
+            $category->delete();
             return 1;
         }else{
             return 0;

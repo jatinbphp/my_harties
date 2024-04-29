@@ -38,6 +38,7 @@
                                 <thead>
                                     <tr>
                                         <th>Id</th>
+                                        <th>Section</th>
                                         <th>Name</th>
                                         <th style="width: 15%;">Status</th>
                                         <th>Action</th>

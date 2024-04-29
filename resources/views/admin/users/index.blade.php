@@ -33,9 +33,11 @@
                             </div>
                         </div>
                         <div class="card-body table-responsive">
-                            <table id="usersTable" class="table table-bordered table-striped">
+                            <input type="hidden" id="route_name" value="{{ route('users.index') }}">
+                            <table id="usersTable" class="table table-bordered table-striped datatable-dynamic">
                                 <thead>
                                     <tr>
+                                        <th>Id</th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
@@ -52,115 +54,4 @@
             </div>
         </section>
     </div>
-@endsection
-
-@section('jquery')
-<script type="text/javascript">
-    $(function () {
-        var table = $('#usersTable').DataTable({
-            processing: true,
-            serverSide: true,
-            pageLength: 100,
-            lengthMenu: [ 100, 200, 300, 400, 500 ],
-            ajax: "{{ route('users.index') }}",
-            columns: [
-                {data: 'name', "width": "15%", name: 'name'},
-                {data: 'email',  name: 'email'},
-                {data: 'phone',  name: 'phone'},
-                {data: 'status', "width": "15%", name: 'status',
-                    render: function(data, type, row) {
-                        var  statusBtn = '';
-                        if (data == "active") {
-                            statusBtn += '<div class="btn-group-horizontal" id="assign_remove_"'+row.id+ '">'+
-                                '<button class="btn btn-success unassign ladda-button" data-style="slide-left" id="remove" url="{{route('users.unassign')}}" ruid="' +row.id+'"  type="button" style="height:28px; padding:0 12px"><span class="ladda-label">Active</span> </button>'+
-                                '</div>';
-                            statusBtn += '<div class="btn-group-horizontal" id="assign_add_"' +row.id+'"  style="display: none"  >'+
-                                '<button class="btn btn-danger assign ladda-button" data-style="slide-left" id="assign" uid="' +row.id+ '" url="{{route('users.assign')}}" type="button"  style="height:28px; padding:0 12px"><span class="ladda-label">In Active</span></button>'+
-                                '</div>';
-                        } else {
-                            statusBtn += '<div class="btn-group-horizontal" id="assign_add_"' +row.id+ '">'+
-                                '<button class="btn btn-danger assign ladda-button" id="assign" data-style="slide-left" uid="'+row.id+'" url="{{route('users.assign')}}"  type="button" style="height:28px; padding:0 12px"><span class="ladda-label">In Active</span></button>'+
-                                '</div>';
-                            statusBtn += '<div class="btn-group-horizontal" id="assign_remove_"' +row.id+ '" style="display: none" >'+
-                                '<button class="btn  btn-success unassign ladda-button" id="remove" ruid="' +row.id+ '" data-style="slide-left" url="{{route('users.unassign')}}" type="button" style="height:28px; padding:0 12px"><span class="ladda-label">Active</span></button>'+
-                                '</div>';
-                        }
-                        return statusBtn;
-                    }
-                },
-                {data: 'action', "width": "15%", name: 'action', orderable: false, searchable: false},
-            ]
-        });
-
-        $('#usersTable tbody').on('click', '.deleteUser', function (event) {
-            event.preventDefault();
-            var roleId = $(this).attr("data-id");
-            swal({
-                    title: "Are you sure?",
-                    text: "You want to delete this user?",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: '#DD6B55',
-                    confirmButtonText: 'Yes, Delete',
-                    cancelButtonText: "No, cancel",
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                },
-            function(isConfirm) {
-                if (isConfirm) {
-                    $.ajax({
-                        url: "{{url('admin/users')}}/"+roleId,
-                        type: "DELETE",
-                        data: {_token: '{{csrf_token()}}' },
-                        success: function(data){
-                            table.row('.selected').remove().draw(false);
-                            swal("Deleted", "Your data successfully deleted!", "success");
-                        }
-                    });
-                } else {
-                    swal("Cancelled", "Your data safe!", "error");
-                }
-            });
-        });
-
-        $('#usersTable tbody').on('click', '.assign', function (event) {
-            event.preventDefault();
-            var user_id = $(this).attr('uid');
-            var url = $(this).attr('url');
-            var l = Ladda.create(this);
-            l.start();
-            $.ajax({
-                url: url,
-                type: "post",
-                data: {'id': user_id},
-                headers: { 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content') },
-                success: function(data){
-                    l.stop();
-                    $('#assign_remove_'+user_id).show();
-                    $('#assign_add_'+user_id).hide();
-                    table.draw(false);
-                }
-            });
-        });
-
-        $('#usersTable tbody').on('click', '.unassign', function (event) {
-            event.preventDefault();
-            var user_id = $(this).attr('ruid');
-            var url = $(this).attr('url');
-            var l = Ladda.create(this);
-            l.start();
-            $.ajax({
-                url: url,
-                type: "post",
-                data: {'id': user_id,'_token' : $('meta[name=_token]').attr('content') },
-                success: function(data){
-                    l.stop();
-                    $('#assign_remove_'+user_id).hide();
-                    $('#assign_add_'+user_id).show();
-                    table.draw(false);
-                }
-            });
-        });
-    });
-  </script>
 @endsection

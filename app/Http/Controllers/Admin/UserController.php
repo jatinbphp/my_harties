@@ -13,17 +13,22 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $data['menu'] = "User";
+        $data['menu'] = "Admin User";
         $data['search'] = $request['search'];
 
         if ($request->ajax()) {
-            $data = User::where('id', '!=', Auth::user()->id)->where('role','!=','admin')->select();
+            $data = User::where('id', '!=', Auth::user()->id)->select();
 
             return Datatables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $records['row'] = $row;
-                    return view('admin.users.action',$records);
+                ->editColumn('status', function($row){
+                    $row['table_name'] = 'users';
+                    return view('admin.common.status-buttons', $row);
+                })
+                ->addColumn('action', function($row){
+                    $row['section_name'] = 'users';
+                    $row['section_title'] = 'Admin User';
+                    return view('admin.common.action-buttons', $row);
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -34,7 +39,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $data['menu'] = "User";
+        $data['menu'] = "Admin User";
         return view("admin.users.create",$data);
     }
 
@@ -42,14 +47,14 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|unique:users,email,NULL,id,deleted_at,NULL',
             'password' => 'confirmed|min:6',
             'phone' =>'required|numeric',
             'status' => 'required',
         ]);
 
         $input = $request->all();
-        $input['role'] = 'user';
+        $input['role'] = 'admin';
         $user = User::create($input);
 
         \Session::flash('success', 'User has been inserted successfully!');
@@ -63,7 +68,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $data['menu'] = "User";
+        $data['menu'] = "Admin User";
         $data['user'] = User::where('id',$id)->first();
         return view('admin.users.edit',$data);
     }
@@ -72,8 +77,8 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$id.',id',
-            'password' => 'confirmed|nullable|min:6',
+            'email' => 'required|email|unique:users,email,'.$id.',id,deleted_at,NULL',
+            'password' => 'nullable|min:6',
             'phone' =>'required|numeric',
             'status' => 'required',
         ]);

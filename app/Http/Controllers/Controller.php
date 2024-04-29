@@ -14,14 +14,14 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public function fileMove($photo, $path){
-        $root = storage_path('app/public/uploads/'.$path);
+        $root = public_path('uploads/'.$path);
         $filename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
         $name = $filename."_".date('His',time()).".".$photo->getClientOriginalExtension();
         if (!file_exists($root)) {
             mkdir($root, 0777, true);
         }
         $photo->move($root,$name);
-        return 'uploads/'.$path."/".$name;
+        return 'public/uploads/'.$path."/".$name;
     }
 }
 

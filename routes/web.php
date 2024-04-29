@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CommonController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\ListingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\ProfileUpdateController;
@@ -41,6 +42,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::resource('users', UserController::class);
 
     /* CATEGORY MANAGEMENT */
+    Route::post('getSubCategory', [CategoryController::class,'getSubCategory'])->name('getSubCategory');
     Route::post('category/assign', [CategoryController::class,'assign'])->name('category.assign');
     Route::post('category/unassign', [CategoryController::class,'unassign'])->name('category.unassign');
     Route::resource('category', CategoryController::class);
@@ -49,6 +51,11 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('sub_category/assign', [SubCategoryController::class,'assign'])->name('sub_category.assign');
     Route::post('sub_category/unassign', [SubCategoryController::class,'unassign'])->name('sub_category.unassign');
     Route::resource('sub_category', SubCategoryController::class);
+
+    /* LISTINGS MANAGEMENT */
+    Route::post('listings/assign', [ListingController::class,'assign'])->name('listings.assign');
+    Route::post('listings/unassign', [ListingController::class,'unassign'])->name('listings.unassign');
+    Route::resource('listings', ListingController::class);
 
     Auth::routes();
 });

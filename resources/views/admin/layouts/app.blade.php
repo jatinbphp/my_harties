@@ -210,6 +210,13 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="{{ route('users.index') }}" class="nav-link @if($menu=='Admin User') active @endif">
+                            <i class="nav-icon fa fa-users"></i>
+                            <p>Manage Admin Users</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="{{ route('category.index') }}" class="nav-link @if($menu=='Category') active @endif">
                             <i class="nav-icon fa fa-sitemap"></i>
                             <p>Manage Category</p>
@@ -220,6 +227,13 @@
                         <a href="{{ route('sub_category.index') }}" class="nav-link @if($menu=='Sub Category') active @endif">
                             <i class="nav-icon fa fa-sitemap"></i>
                             <p>Manage Sub Category</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('listings.index') }}" class="nav-link @if($menu=='Listings') active @endif">
+                            <i class="nav-icon fa fa-th-list"></i>
+                            <p>Manage Listings</p>
                         </a>
                     </li>
                 </ul>
@@ -268,7 +282,7 @@
 <script src="{{ URL::asset('assets/plugins/jSignature/libs/jSignature.min.js')}}"></script>
 <script src="{{ URL::asset('assets/plugins/jSignature/libs/modernizr.js')}}"></script>
 <script src="{{ URL::asset('assets/plugins/comboTree/comboTreePlugin.js')}}"></script>
-<script src="{{ URL::asset('assets/dist/admin/js/table-actions.js')}}"></script>
+<script src="{{ URL::asset('assets/dist/admin/js/table-actions.js?time='.time())}}"></script>
 
 <script>Ladda.bind( 'input[type=submit]' );</script>
 <script>

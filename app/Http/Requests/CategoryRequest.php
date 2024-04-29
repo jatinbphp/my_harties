@@ -15,14 +15,13 @@ class CategoryRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
+            'image' => 'required|mimes:jpeg,jpg,png,bmp,gif',
             'status' => 'required',
         ];
 
-        /*if ($this->isMethod('patch')) {
-            $rules['name'] .= '|unique:categories,name,' . $this->category->id;
-        } else {
-            $rules['name'] .= '|unique:categories';
-        }*/
+        if ($this->isMethod('patch')) {
+            $rules['image'] = 'nullable|mimes:jpeg,jpg,png,bmp,gif';
+        }
 
         return $rules;
     }
