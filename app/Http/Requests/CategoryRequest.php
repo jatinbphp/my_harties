@@ -14,6 +14,7 @@ class CategoryRequest extends FormRequest
     public function rules()
     {
         $rules = [
+            'section' => 'required',
             'name' => 'required',
             'image' => 'required|mimes:jpeg,jpg,png,bmp,gif',
             'status' => 'required',

@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="{{asset('assets/dist/img/favicon.png')}}?{{ time() }}" type="image/x-icon" />
     <title>{{ config('app.name', 'Laravel') }} | {{ $menu }}</title>
     <meta name="_token" content="{!! csrf_token() !!}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,125 +32,35 @@
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/css/bootstrap-colorpicker.min.css">
     <link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.css">
     <style>
-        .candidate, .job-title {cursor: pointer}
-        a.disabled {
-            pointer-events: none;
-            cursor: default;
-        }
-        .disabled{color: #c5c5c5!important;}
-
-        [type="radio"]:checked,
-        [type="radio"]:not(:checked) {
-            position: absolute;
-            left: -9999px;
-        }
-        [type="radio"]:checked + label,
-        [type="radio"]:not(:checked) + label
-        {
-            position: relative;
-            padding-left: 28px;
-            cursor: pointer;
-            line-height: 20px;
-            display: inline-block;
-        }
-        [type="radio"]:checked + label:before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 20px;
-            height: 20px;
-            border: 4px solid #1ABC9C;
-            border-radius: 100%;
-            background: #fff;
-        }
-        [type="radio"]:not(:checked) + label:before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 20px;
-            height: 20px;
-            border: 4px solid #ddd;
-            border-radius: 100%;
-            background: #fff;
-        }
-        [type="radio"]:checked + label:after,
-        [type="radio"]:not(:checked) + label:after {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: #1ABC9C;
-            position: absolute;
-            top: 7px;
-            left: 7px;
-            border-radius: 100%;
-            -webkit-transition: all 0.2s ease;
-            transition: all 0.2s ease;
-        }
-        [type="radio"]:not(:checked) + label:after {
-            opacity: 0;
-            -webkit-transform: scale(0);
-            transform: scale(0);
-        }
-        [type="radio"]:checked + label:after {
-            opacity: 1;
-            -webkit-transform: scale(1);
-            transform: scale(1);
-        }
-        .border-warning-10{
-            border: 10px solid #ffc107!important;
-        }
-        .border-width-5{
-            border: 5px solid!important;
-        }
-        .border-color-info{
-            color: #B266B3!important;
-        }
-        .border-color-warning{
-            color: #ffc107!important;
-        }
-        .border-top {
-            border-top: 1px solid #050505 !important;
-        }
-        .border-right {
-            border-right: 1px solid #050505 !important;
-        }
-        .border-bottom {
-            border-bottom: 1px solid #050505 !important;
-        }
-        .border-left {
-            border-left: 1px solid #050505 !important;
-        }
-        .color-group {
-            background-color: #E7FFF9
-        }
-        #overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* Adjust the transparency as needed */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #spinner {
-            border: 10px solid #f3f3f3;
-            border-top: 10px solid #0b0b0c;
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
-            animation: spin 1s linear infinite;
-        }
-
+        .label-info{background-color:#5bc0de;padding:2px}
+        .bootstrap-tagsinput{width:100%;display:block;width:100%;height:calc(2.25rem + 2px);padding:.375rem .75rem;font-size:1rem;font-weight:400;line-height:1.5;color:#495057;background-color:#fff;background-clip:padding-box;border:1px solid #ced4da;border-radius:.25rem;box-shadow:inset 0 0 0 transparent;transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out}
+        .candidate,.job-title{cursor:pointer}
+        a.disabled{pointer-events:none;cursor:default}
+        .disabled{color:#c5c5c5!important}
+        [type="radio"]:checked,[type="radio"]:not(:checked){position:absolute;left:-9999px}
+        [type="radio"]:checked + label,[type="radio"]:not(:checked) + label{position:relative;padding-left:28px;cursor:pointer;line-height:20px;display:inline-block}
+        [type="radio"]:checked + label:before{content:'';position:absolute;left:0;top:0;width:20px;height:20px;border:4px solid #1ABC9C;border-radius:100%;background:#fff}
+        [type="radio"]:not(:checked) + label:before{content:'';position:absolute;left:0;top:0;width:20px;height:20px;border:4px solid #ddd;border-radius:100%;background:#fff}
+        [type="radio"]:checked + label:after,[type="radio"]:not(:checked) + label:after{content:'';width:6px;height:6px;background:#1ABC9C;position:absolute;top:7px;left:7px;border-radius:100%;-webkit-transition:all .2s ease;transition:all .2s ease}
+        [type="radio"]:not(:checked) + label:after{opacity:0;-webkit-transform:scale(0);transform:scale(0)}
+        [type="radio"]:checked + label:after{opacity:1;-webkit-transform:scale(1);transform:scale(1)}
+        .border-warning-10{border:10px solid #ffc107!important}
+        .border-width-5{border:5px solid!important}
+        .border-color-info{color:#B266B3!important}
+        .border-color-warning{color:#ffc107!important}
+        .border-top{border-top:1px solid #050505!important}
+        .border-right{border-right:1px solid #050505!important}
+        .border-bottom{border-bottom:1px solid #050505!important}
+        .border-left{border-left:1px solid #050505!important}
+        .color-group{background-color:#E7FFF9}
+        #overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:1000}
+        #spinner{border:10px solid #f3f3f3;border-top:10px solid #0b0b0c;border-radius:50%;width:100px;height:100px;animation:spin 1s linear infinite}
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        0%{transform:rotate(0deg)}
+        100%{transform:rotate(360deg)}
         }
     </style>
 </head>
@@ -191,12 +102,12 @@
                             <li class="nav-item">
                                 <?php $eid = \Illuminate\Support\Facades\Auth::guard('admin')->user()->id; ?>
                                 <a href="{{ route('profile_update.edit',['profile_update'=>$eid]) }}" class="nav-link @if(isset($menu) && $menu=='User') active @endif">
-                                    <i class="nav-icon fa fa-pencil"></i><p class="text-warning">Edit Profile</p>
+                                    <i class="nav-icon fa fa-pencil-alt"></i> <p class="text-warning">Edit Profile</p>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('logout') }}" class="nav-link">
-                                    <i class="nav-icon fa fa-sign-out"></i><p class="text-danger">Log out</p>
+                                    <i class="nav-icon fa fa-sign-out-alt"></i> <p class="text-danger">Log out</p>
                                 </a>
                             </li>
                         </ul>
@@ -283,6 +194,7 @@
 <script src="{{ URL::asset('assets/plugins/jSignature/libs/modernizr.js')}}"></script>
 <script src="{{ URL::asset('assets/plugins/comboTree/comboTreePlugin.js')}}"></script>
 <script src="{{ URL::asset('assets/dist/admin/js/table-actions.js?time='.time())}}"></script>
+<script src="https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 
 <script>Ladda.bind( 'input[type=submit]' );</script>
 <script>

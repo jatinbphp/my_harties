@@ -34,13 +34,12 @@
                         </div>
                         <div class="card-body table-responsive">
                             <input type="hidden" id="route_name" value="{{ route('listings.index') }}">
-                            <table id="subCategoryTable" class="table table-bordered table-striped datatable-dynamic">
+                            <table id="listingTable" class="table table-bordered table-striped datatable-dynamic">
                                 <thead>
                                     <tr>
                                         <th>Id</th>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th style="width: 15%;">Status</th>
+                                        <th>Company Name</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

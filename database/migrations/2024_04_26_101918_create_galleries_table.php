@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('galleries', function (Blueprint $table) {
             $table->id();
-            $table->integer('listing_id');
-            $table->text('image');
+            $table->integer('listing_id')->default(0);
+            $table->text('image')->nullable();
             $table->timestamps();
         });
     }

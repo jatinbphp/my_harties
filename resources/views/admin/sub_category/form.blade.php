@@ -1,8 +1,8 @@
 {!! Form::hidden('redirects_to', URL::previous()) !!}
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-            <label class="control-label" for="name">Category <span class="text-red">*</span></label>
+            <label class="control-label" for="name">Category :<span class="text-red">*</span></label>
             {!! Form::select('category', $category, isset($sub_category) ? $sub_category['parent_id'] : null, ['class' => 'form-control select2']) !!}
             @if ($errors->has('category'))
                 <span class="text-danger">
@@ -11,10 +11,9 @@
             @endif
         </div>
     </div>
-
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-            <label class="control-label" for="name">Name <span class="text-red">*</span></label>
+            <label class="control-label" for="name">Name :<span class="text-red">*</span></label>
             {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Enter Name', 'id' => 'name']) !!}
             @if ($errors->has('name'))
                 <span class="text-danger">
@@ -23,11 +22,16 @@
             @endif
         </div>
     </div>
-
-    <div class="col-md-6">
+    <div class="col-md-4">
+        <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
+            <label class="control-label" for="status">Status :<span class="text-red">*</span></label>
+            {!! Form::select('status', \App\Models\Listing::$status, null, ['class' => 'form-control']) !!}
+        </div>
+    </div>
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('image') ? ' has-error' : '' }}">
-            <label class="col-md-12 control-label" for="image">Image<span class="text-red">*</span></label>
-            <div class="col-md-12">
+            <label class="control-label" for="image">Image :<span class="text-red">*</span></label>
+            <div>
                 <div class="fileError">
                     {!! Form::file('image', ['class' => '', 'id'=> 'image','accept'=>'image/*', 'onChange'=>'AjaxUploadImage(this)']) !!}
                 </div>
@@ -40,26 +44,6 @@
                     <span class="text-danger">
                 <strong>{{ $errors->first('image') }}</strong>
             </span>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
-            <label class="col-md-12 control-label" for="status">Status <span class="text-red">*</span></label>
-            <div class="col-md-12">
-                @foreach (\App\Models\Category::$status as $key => $value)
-                        <?php $checked = !isset($sub_category) && $key == 'active'?'checked':'';?>
-                    <label>
-                        {!! Form::radio('status', $key, null, ['class' => 'flat-red',$checked]) !!} <span style="margin-right: 10px">{{ $value }}</span>
-                    </label>
-                @endforeach
-                <br class="statusError">
-                @if ($errors->has('status'))
-                    <span class="text-danger" id="statusError">
-                        <strong>{{ $errors->first('status') }}</strong>
-                    </span>
                 @endif
             </div>
         </div>

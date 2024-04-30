@@ -93,7 +93,6 @@ class SubCategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         if(!empty($category)){
-            $file_path=storage_path('app/public/'.$category->image);
             if (!empty($category['image']) && file_exists($category['image'])) {
                 unlink($category['image']);
             }

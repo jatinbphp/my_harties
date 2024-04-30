@@ -1,28 +1,20 @@
 {!! Form::hidden('redirects_to', URL::previous()) !!}
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('section') ? ' has-error' : '' }}">
-            <label class="col-md-12 control-label" for="section">Section <span class="text-red">*</span></label>
-            <div class="col-md-12">
-                @foreach (\App\Models\Category::$sections as $key1 => $value1)
-                        <?php $checked = !isset($category) && $key1 == 'my_harties'?'checked':'';?>
-                    <label>
-                        {!! Form::radio('section', $key1, null, ['class' => 'flat-red',$checked]) !!} <span style="margin-right: 10px">{{ $value1 }}</span>
-                    </label>
-                @endforeach
-                <br class="statusError">
-                @if ($errors->has('section'))
-                    <span class="text-danger" id="statusError">
-                        <strong>{{ $errors->first('section') }}</strong>
-                    </span>
-                @endif
-            </div>
+            <label class="control-label" for="section">Section :<span class="text-red">*</span></label>
+            {!! Form::select('section', \App\Models\Category::$sections, null, ['class' => 'form-control', 'placeholder' => 'Please Select']) !!}
+
+            @if ($errors->has('section'))
+                <span class="text-danger">
+                    <strong>{{ $errors->first('section') }}</strong>
+                </span>
+            @endif
         </div>
     </div>
-
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-            <label class="control-label" for="name">Name <span class="text-red">*</span></label>
+            <label class="control-label" for="name">Name :<span class="text-red">*</span></label>
             {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Enter Name', 'id' => 'name']) !!}
             @if ($errors->has('name'))
                 <span class="text-danger">
@@ -31,11 +23,16 @@
             @endif
         </div>
     </div>
-
-    <div class="col-md-6">
+    <div class="col-md-4">
+        <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
+            <label class="control-label" for="status">Status :<span class="text-red">*</span></label>
+            {!! Form::select('status', \App\Models\Category::$status, null, ['class' => 'form-control']) !!}
+        </div>
+    </div>
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('image') ? ' has-error' : '' }}">
-            <label class="col-md-12 control-label" for="image">Image<span class="text-red">*</span></label>
-            <div class="col-md-12">
+            <label class="control-label" for="image">Image :<span class="text-red">*</span></label>
+            <div class="">
                 <div class="fileError">
                     {!! Form::file('image', ['class' => '', 'id'=> 'image','accept'=>'image/*', 'onChange'=>'AjaxUploadImage(this)']) !!}
                 </div>
@@ -48,26 +45,6 @@
                     <span class="text-danger">
                     <strong>{{ $errors->first('image') }}</strong>
                 </span>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
-            <label class="col-md-12 control-label" for="status">Status <span class="text-red">*</span></label>
-            <div class="col-md-12">
-                @foreach (\App\Models\Category::$status as $key => $value)
-                        <?php $checked = !isset($category) && $key == 'active'?'checked':'';?>
-                    <label>
-                        {!! Form::radio('status', $key, null, ['class' => 'flat-red',$checked]) !!} <span style="margin-right: 10px">{{ $value }}</span>
-                    </label>
-                @endforeach
-                <br class="statusError">
-                @if ($errors->has('status'))
-                    <span class="text-danger" id="statusError">
-                        <strong>{{ $errors->first('status') }}</strong>
-                    </span>
                 @endif
             </div>
         </div>

@@ -25,7 +25,7 @@
                         <div class="card-header">
                             <h3 class="card-title">Edit {{$menu}}</h3>
                         </div>
-                        {!! Form::model($listings,['url' => route('listings.update',['listings'=>$listings->id]),'method'=>'patch','id' => 'categorysForm','class' => 'form-horizontal','files'=>true]) !!}
+                        {!! Form::model($listing,['url' => route('listings.update',['listing'=>$listing->id]),'method'=>'patch','id' => 'categorysForm','class' => 'form-horizontal','files'=>true]) !!}
                         <div class="card-body">
                             @include ('admin.listings.form')
                         </div>

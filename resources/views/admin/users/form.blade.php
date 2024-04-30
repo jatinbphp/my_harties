@@ -1,6 +1,6 @@
 {!! Form::hidden('redirects_to', URL::previous()) !!}
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
             <label class="control-label" for="name">Name :<span class="text-red">*</span></label>
             {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Enter Name', 'id' => 'name']) !!}
@@ -12,10 +12,10 @@
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-            <label class="control-label" for="first_name">Email :<span class="text-red">*</span></label>
-            {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'Enter Email', 'id' => 'email']) !!}
+            <label class="control-label" for="first_name">Email Address :<span class="text-red">*</span></label>
+            {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'Enter Email Address', 'id' => 'email']) !!}
             @if ($errors->has('email'))
                 <span class="text-danger">
                     <strong>{{ $errors->first('email') }}</strong>
@@ -23,8 +23,7 @@
             @endif
         </div>
     </div>
-</div>
-<div class="row">
+
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('phone') ? ' has-error' : '' }}">
             <label class="control-label" for="phone">Phone :<span class="text-red">*</span></label>
@@ -60,28 +59,10 @@
         </div>
     </div>
 
-</div>
-
-<div class="row">
     <div class="col-md-4">
         <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
             <label class="col-md-12 control-label" for="status">Status :<span class="text-red">*</span></label>
-            <div class="col-md-12">
-                @foreach (\App\Models\User::$status as $key => $value)
-                        <?php $checked = !isset($users) && $key == 'active'?'checked':'';?>
-                    <label>
-                        {!! Form::radio('status', $key, null, ['class' => 'flat-red',$checked]) !!} <span style="margin-right: 10px">{{ $value }}</span>
-                    </label>
-                @endforeach
-                <br class="statusError">
-                @if ($errors->has('status'))
-                    <span class="text-danger" id="statusError">
-                        <strong>{{ $errors->first('status') }}</strong>
-                    </span>
-                @endif
-            </div>
+            {!! Form::select('status', \App\Models\User::$status, null, ['class' => 'form-control']) !!}
         </div>
     </div>
-
-
 </div>

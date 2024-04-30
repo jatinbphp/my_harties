@@ -8,11 +8,11 @@ $(function () {
         ajax: $("#route_name").val(),
         columns: [
             {data: 'id', "width": "10%", name: 'name'},
-            {data: 'name', "width": "15%", name: 'name'},
+            {data: 'name', name: 'name'},
             {data: 'email',  name: 'email'},
             {data: 'phone',  name: 'phone'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
-            {data: 'action', "width": "12%",  name: 'action', orderable: false},
+            {data: 'action', "width": "10%",  name: 'action', orderable: false},
         ],
         "order": [[1, "ASC"]]
     });
@@ -26,12 +26,12 @@ $(function () {
         ajax: $("#route_name").val(),
         columns: [
             {data: 'id', "width": "10%", name: 'id'},
-            {data: 'section', "width": "20%", name: 'section'},
-            {data: 'name', "width": "50%", name: 'name'},
+            {data: 'section', name: 'section'},
+            {data: 'name', name: 'name'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
-            {data: 'action', "width": "12%",  name: 'action', orderable: false},
+            {data: 'action', "width": "10%",  name: 'action', orderable: false},
         ],
-        "order": [[1, "ASC"]]
+        "order": [[1, "DESC"]]
     });
 
     // Sub Category Table
@@ -43,11 +43,28 @@ $(function () {
         ajax: $("#route_name").val(),
         columns: [
             {data: 'id', "width": "10%", name: 'id'},
-            {data: 'name', "width": "40%", name: 'name'},
-            {data: 'category', "width": "20%", name: 'category'},
-            {data: 'status', "width": "15%",  name: 'status', orderable: false},
-            {data: 'action', "width": "15%", name: 'action', orderable: false, searchable: false},
-        ]
+            {data: 'name', name: 'name'},
+            {data: 'category', name: 'category'},
+            {data: 'status', "width": "10%",  name: 'status', orderable: false},
+            {data: 'action', "width": "10%", name: 'action', orderable: false, searchable: false},
+        ],
+        "order": [[1, "DESC"]]
+    });
+
+    // Sub Category Table
+    var listing = $('#listingTable').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 100,
+        lengthMenu: [ 100, 200, 300, 400, 500 ],
+        ajax: $("#route_name").val(),
+        columns: [
+            {data: 'id', "width": "10%", name: 'id'},
+            {data: 'company_name', name: 'company_name'},
+            {data: 'status', "width": "10%",  name: 'status', orderable: false},
+            {data: 'action', "width": "10%", name: 'action', orderable: false, searchable: false},
+        ],
+        "order": [[0, "DESC"]]
     });
 
     //Delete Record
@@ -81,6 +98,8 @@ $(function () {
                             sub_category.row('.selected').remove().draw(false);
                         } else if(section=='users_table'){
                             users_table.row('.selected').remove().draw(false);
+                        } else if(section=='listing_table'){
+                            listing_table.row('.selected').remove().draw(false);
                         }
                         swal("Deleted", "Your data successfully deleted!", "success");
                     }
@@ -126,8 +145,10 @@ $(function () {
                     category_table.draw(false);
                 } else if(section=='sub_category'){
                     sub_category.draw(false);
-                }else if(section=='users'){
+                }   else if(section=='users'){
                     users_table.draw(false);
+                } else if(section=='listing_table'){
+                    listing_table.row('.selected').remove().draw(false);
                 }
 
             }
@@ -272,4 +293,14 @@ function initialize() {
             infoWindow.open(map, marker);
         });
     });
+}
+
+function toggleSpecialDescription(radioButton) {
+    if(radioButton === "yes") {
+        $('.special_div').show();
+    } else {
+        $('.special_div').hide();
+        $('#special_heading').val('');
+        $('#special_description').val('');
+    }
 }

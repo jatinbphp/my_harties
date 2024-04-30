@@ -37,6 +37,7 @@ class Listing extends Model
     const DAY5 = 'Thursday';
     const DAY6 = 'Friday';
     const DAY7 = 'Saturday';
+    const PUBLIC_HOLIDAY = 'Public_holiday';
 
     public static $days = [
         self::DAY1 => 'Sunday',
@@ -46,6 +47,7 @@ class Listing extends Model
         self::DAY5 => 'Thursday',
         self::DAY6 => 'Friday',
         self::DAY7 => 'Saturday',
+        self::PUBLIC_HOLIDAY => 'Public Holiday',
     ];
 
     public function Category(){
@@ -56,5 +58,7 @@ class Listing extends Model
         return $this->belongsTo(Category::class,'sub_category');
     }
 
-
+    public function listing_images(){
+        return $this->hasMany(Gallery::class, 'listing_id')->orderBy('id', 'DESC');
+    }
 }
