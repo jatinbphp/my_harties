@@ -11,6 +11,8 @@
             @endif
         </div>
     </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         <div class="form-group{{ $errors->has('address') ? ' has-error' : '' }}">
             <label class="control-label" for="address">Address :<span class="text-red">*</span></label>
@@ -29,6 +31,8 @@
             <div id="map-canvas" style="overflow: hidden;height: 500px;position: relative;"></div>
         </div>
     </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
             <label class="control-label" for="description">Description :<span class="text-red">*</span></label>
@@ -40,6 +44,8 @@
             @endif
         </div>
     </div>
+</div>
+<div class="row">
     <div class="col-md-3">
         <div class="form-group{{ $errors->has('telephone_number') ? ' has-error' : '' }}">
             <label class="control-label" for="telephone_number">Telephone Number :<span class="text-red">*</span></label>
@@ -69,23 +75,26 @@
             {!! Form::text('website_address', null, ['class' => 'form-control', 'placeholder' => 'Enter Website Address', 'id' => 'website']) !!}
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-            <label class="control-label" for="name">Select Category :<span class="text-red">*</span></label>
-            {!! Form::select('category', $categories, null, ['class' => 'form-control select2', 'id'=> 'category', 'data-url'=>route('getSubCategory'), 'placeholder' => 'Please Select']) !!}
-            @if ($errors->has('category'))
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group{{ $errors->has('section') ? ' has-error' : '' }}">
+            <label class="control-label" for="section">Select Section :<span class="text-red">*</span></label>
+            
+            @php $section = isset($listing->section) && $listing->section=='harties_services'?'harties_services':'my_harties'; @endphp
+            {!! Form::select('section', \App\Models\Category::$sections, $section, ['class' => 'form-control select2', 'onchange' => 'toggleSection(this.value)']) !!}
+
+            @if ($errors->has('section'))
                 <span class="text-danger">
-                    <strong>{{ $errors->first('category') }}</strong>
+                    <strong>{{ $errors->first('section') }}</strong>
                 </span>
-            @endif
+            @endif            
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="form-group{{ $errors->has('sub_category') ? ' has-error' : '' }}">
-            <label class="control-label" for="sub_category">Select Sub Category :</label>
-            {!! Form::select('sub_category', $sub_categories, null, ['class' => 'form-control select2','id'=> 'sub_category', 'placeholder' => 'Please Select']) !!}
-        </div>
-    </div>
+
+    @include('admin.listings.additional-fields')
+</div>
+<div class="row">
     <div class="col-md-3">
         <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
             <label class="control-label" for="status">Status :</label>
@@ -278,7 +287,7 @@ function readURL(input) {
     }
 }
 
-function removeAdditionalProductImg(img_name, image_id, product_id){
+function removeAdditionalProductImg(img_name, image_id, listing_id){
     swal({
             title: "Are you sure?",
             text: "You want to delete this image",
@@ -298,7 +307,7 @@ function removeAdditionalProductImg(img_name, image_id, product_id){
                 data: {
                     _token: '{{csrf_token()}}',
                     'id': image_id,
-                    'product_id': product_id,
+                    'listing_id': listing_id,
                     'img_name': img_name,
                  },
                 success: function(data){
@@ -364,5 +373,45 @@ $(document).ready(function(){
         }
     });
 });
+
+function toggleSection(radioButton) {
+    if(radioButton === "my_harties") {
+        $('.additional-field').show();
+        $("#category").prop('selectedIndex', 1);
+        $("#sub_category").prop('selectedIndex', 1);
+    } else {
+        $('.additional-field').hide();
+        $("#category").prop('selectedIndex', 1);
+    }
+
+    $('#category').empty();   
+    $('#sub_category').empty();   
+
+    $(".additional-field").removeClass('d-none');
+
+    if(radioButton=='my_harties'){
+        $('.first-selection').find('.lableText').text('Select Category');
+    } else {
+        $('.first-selection').find('.lableText').text('Select Service');    
+    }
+    
+    $.ajax({
+        url: "{{ route('listings.additional_fields_data')}}",
+        type: "POST",
+        data: {
+            _token: '{{csrf_token()}}',
+            section : radioButton,
+        },
+        success: function(response){
+            $('#category').empty().append('<option value="">Please Select</option>');
+            $('#category').select2('destroy').select2();
+            response.forEach(function(category) {
+                $('#category').append('<option value="' + category.id + '">' + category.name + '</option>');
+            });
+
+            $('#category,#sub_category').select2();
+        }
+    });
+}
 </script>
 @endsection

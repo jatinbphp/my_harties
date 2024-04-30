@@ -57,6 +57,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('listings/unassign', [ListingController::class,'unassign'])->name('listings.unassign');
     Route::post('listings/removeimage', [ListingController::class,'removeImage'])->name('listings.removeimage');
     Route::post('listings/sub-categories', [ListingController::class,'getSubCategories'])->name('listings.by_category');
+    Route::post('listings-additional-fields-data', [ListingController::class,'additionalFieldsData'])->name('listings.additional_fields_data');
     Route::resource('listings', ListingController::class);
 
     Auth::routes();

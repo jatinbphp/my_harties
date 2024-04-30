@@ -39,6 +39,9 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Company Name</th>
+                                        <th>Section Type</th>
+                                        <th>Is Featured</th>
+                                        <th>Has Special</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>

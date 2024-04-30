@@ -17,7 +17,8 @@ class DashboardController extends Controller
 
     public function index(){
         $data['menu'] = 'Dashboard';
-        $data['category'] = Category::count();
+        $data['category'] = Category::where('section','my_harties')->where('parent_id',0)->count();
+        $data['services'] = Category::where('section','harties_services')->count();
         return view('admin.dashboard',$data);
     }
 }

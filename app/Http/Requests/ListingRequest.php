@@ -15,6 +15,7 @@ class ListingRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
+            'section' => 'required',
             'company_name' => 'required',
             'address' => 'required',
             'description' => 'required',

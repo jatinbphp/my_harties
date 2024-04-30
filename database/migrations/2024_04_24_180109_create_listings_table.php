@@ -19,6 +19,7 @@ return new class extends Migration
 
         Schema::create('listings', function (Blueprint $table) {
             $table->id();
+            $table->string('section')->default('my_harties');
             $table->integer('user_id')->default(0);
             $table->string('company_name')->nullable();
             $table->longText('address')->nullable();

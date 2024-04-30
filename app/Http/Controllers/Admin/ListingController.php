@@ -29,6 +29,15 @@ class ListingController extends Controller
                 ->addColumn('sub_category', function ($row) {
                     return !empty($row['SubCategory']) ? $row['SubCategory']['name'] : '';
                 })
+                ->editColumn('section', function ($row) {
+                    return ucwords(str_replace("_", " ", $row['section']));
+                })
+                ->editColumn('is_featured', function ($row) {
+                    return ucwords($row['is_featured']);
+                })
+                ->editColumn('has_special', function ($row) {
+                    return ucwords($row['has_special']);
+                })
                 ->editColumn('status', function($row){
                     $row['table_name'] = 'listings';
                     return view('admin.common.status-buttons', $row);
@@ -48,7 +57,7 @@ class ListingController extends Controller
     public function create()
     {
         $data['menu'] = "Listings";
-        $data['categories'] = Category::where('parent_id',0)->where('status','active')->orderBy('name')->pluck('name','id');
+        $data['categories'] = Category::where('parent_id',0)->where('section','my_harties')->where('status','active')->orderBy('name')->pluck('name','id');
         $data['sub_categories'] = [];
         return view("admin.listings.create",$data);
     }
@@ -86,7 +95,7 @@ class ListingController extends Controller
     {
         $data['menu'] = "Listings";
         $data['listing'] = Listing::with('listing_images')->where('id',$id)->first();
-        $data['categories'] = Category::where('parent_id',0)->where('status','active')->orderBy('name')->pluck('name','id');
+        $data['categories'] = Category::where('parent_id',0)->where('section',$data['listing']['section'])->where('status','active')->orderBy('name')->pluck('name','id');
         $data['sub_categories'] = Category::where('parent_id',$data['listing']['category'])->where('status','active')->orderBy('name')->pluck('name','id');
         return view('admin.listings.edit',$data);
     }
@@ -149,7 +158,7 @@ class ListingController extends Controller
     {
         $image = Gallery::findOrFail($request['id']);
         if(!empty($image)){
-            unlink($request['image']);
+            unlink($request['img_name']);
             $image->delete();
             return 1;
         }else{
@@ -165,5 +174,13 @@ class ListingController extends Controller
             return response()->json($sub_categories);
         }
 
+    }
+
+    public function additionalFieldsData(Request $request)
+    {
+        $getSection = $request->section;
+        $getTyp = ($getSection == 'my_harties') ? 'my_harties' : 'harties_services';
+        $categories = Category::where('parent_id',0)->where('section',$getTyp)->where('status','active')->orderBy('name')->get();
+        return response()->json($categories);
     }
 }

@@ -42,7 +42,7 @@ class SubCategoryController extends Controller
     public function create()
     {
         $data['menu'] = "Sub Category";
-        $data['category'] = Category::where('parent_id',0)->where('status','active')->orderBy('name')->pluck('name','id')->prepend('Please Select','');
+        $data['category'] = Category::where('parent_id',0)->where('section','my_harties')->where('status','active')->orderBy('name')->pluck('name','id')->prepend('Please Select','');
         return view("admin.sub_category.create",$data);
     }
 
@@ -69,7 +69,7 @@ class SubCategoryController extends Controller
     {
         $data['menu'] = "Sub Category";
         $data['sub_category'] = Category::where('id',$id)->first();
-        $data['category'] = Category::where('parent_id',0)->where('status','active')->orderBy('name')->pluck('name','id')->prepend('Please Select','');
+        $data['category'] = Category::where('parent_id',0)->where('section','my_harties')->where('status','active')->orderBy('name')->pluck('name','id')->prepend('Please Select','');
         return view('admin.sub_category.edit',$data);
     }
 

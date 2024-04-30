@@ -10,7 +10,7 @@ class Listing extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id','company_name','address','latitude','longitude','description','telephone_number',
+    protected $fillable = ['section','user_id','company_name','address','latitude','longitude','description','telephone_number',
         'whatsapp_number','email','website_address','open_hours','main_image','category','sub_category',
         'is_featured','has_special','special_heading','special_description','keywords','paid_member','expiry_date','status'];
 
@@ -51,11 +51,11 @@ class Listing extends Model
     ];
 
     public function Category(){
-        return $this->belongsTo(Category::class,'category');
+        return $this->belongsTo(Category::class,'category')->select('id', 'name', 'image');
     }
 
     public function SubCategory(){
-        return $this->belongsTo(Category::class,'sub_category');
+        return $this->belongsTo(Category::class,'sub_category')->select('id', 'name', 'image');
     }
 
     public function listing_images(){

@@ -61,6 +61,9 @@ $(function () {
         columns: [
             {data: 'id', "width": "10%", name: 'id'},
             {data: 'company_name', name: 'company_name'},
+            {data: 'section', name: 'section'},
+            {data: 'is_featured', name: 'is_featured'},
+            {data: 'has_special', name: 'has_special'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
             {data: 'action', "width": "10%", name: 'action', orderable: false, searchable: false},
         ],
