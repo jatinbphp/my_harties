@@ -51,7 +51,7 @@ $(function () {
         "order": [[1, "DESC"]]
     });
 
-    // Sub Category Table
+    // Listings Table
     var listing = $('#listingTable').DataTable({
         processing: true,
         serverSide: true,
@@ -66,6 +66,24 @@ $(function () {
             {data: 'has_special', name: 'has_special'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
             {data: 'action', "width": "10%", name: 'action', orderable: false, searchable: false},
+        ],
+        "order": [[0, "DESC"]]
+    });
+
+    //Contact Us Table
+    var contactus = $('#contactusTable').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 100,
+        lengthMenu: [ 100, 200, 300, 400, 500 ],
+        ajax: $("#route_name").val(),
+        columns: [
+            {data: 'id', "width": "10%", name: 'id'},
+            {data: 'name', name: 'name'},
+            {data: 'contact_number', "width": "14%", name: 'contact_number'},
+            {data: 'email', name: 'email'},
+            {data: 'message', name: 'message'},
+            {data: 'created_at', "width": "14%", name: 'created_at'},
         ],
         "order": [[0, "DESC"]]
     });

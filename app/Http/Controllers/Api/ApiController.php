@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Listing;
 use App\Models\Gallery;
+use App\Models\ContactUs;
 use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
@@ -185,6 +186,9 @@ class ApiController extends Controller
                         $image->image = url($image->image);
                     });
                     
+                    // Decode the open_hours JSON field
+                    $listing->open_hours = json_decode($listing->open_hours);
+                    
                     return $listing;
                 });
 
@@ -193,6 +197,36 @@ class ApiController extends Controller
             }
 
             return response(['status' => true, 'data' => $listing_details], 200);
+
+        } catch (Exception $e) {
+            return $this->respond(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);
+        }
+    }
+
+    public function submitContactUs(Request $request){
+        try{
+
+            $validator = Validator::make($request->post(), [
+                'name' => 'required',
+                'contact_number' => 'required',
+                'email' => 'required|email',
+                'message' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response(['status' => false, 'message' => implode(',', $validator->errors()->all())], 404);
+            }
+
+            $input = $request->all();
+            $contact_us = ContactUs::create($input);
+            
+            if(empty($contact_us)){
+                return response(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 404);
+            }
+
+            $this->sendMail($contact_us, 'New Inquiry','contact_us');
+
+            return response(['status' => true, 'data' => $contact_us], 200);
 
         } catch (Exception $e) {
             return $this->respond(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);

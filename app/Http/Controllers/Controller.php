@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class Controller extends BaseController
 {
@@ -22,6 +23,17 @@ class Controller extends BaseController
         }
         $photo->move($root,$name);
         return 'public/uploads/'.$path."/".$name;
+    }
+
+    public function sendMail($mail_data, $subject, $template,$from = null){
+        $data['data'] = $mail_data;
+        $email = $mail_data['email'];
+        \Mail::send('mail_template/'.$template,(array)$data, function($message) use ($email, $subject, $from, $mail_data) {
+            $message->from($mail_data['email']);
+            $message->to('info@mytownonline.app');
+            $message->subject($subject);
+        });
+        return 1;
     }
 }
 

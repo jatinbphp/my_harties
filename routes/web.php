@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\ProfileUpdateController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,9 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('listings/sub-categories', [ListingController::class,'getSubCategories'])->name('listings.by_category');
     Route::post('listings-additional-fields-data', [ListingController::class,'additionalFieldsData'])->name('listings.additional_fields_data');
     Route::resource('listings', ListingController::class);
+
+    /*Contact Us*/
+    Route::resource('contactus', ContactUsController::class);
 
     Auth::routes();
 });

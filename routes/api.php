@@ -24,3 +24,4 @@ Route::post('get-sub-categories', [ApiController::class,'getSubCategoriesById'])
 Route::get('get-services', [ApiController::class,'getServices']);
 Route::post('get-listings', [ApiController::class,'getListings']);
 Route::post('get-listing-details', [ApiController::class,'getListingDetails']);
+Route::post('submit-contact-us', [ApiController::class,'submitContactUs']);
