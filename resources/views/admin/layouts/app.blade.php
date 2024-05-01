@@ -154,6 +154,20 @@
                             <p>Contact Us</p>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('list-your-business.index') }}" class="nav-link @if(isset($menu) && $menu=='List Your Business') active @endif">
+                            <i class="nav-icon fa fa-building"></i>
+                            <p>List Your Business</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('emergencies-update.edit',['emergencies_update'=>1]) }}" class="nav-link @if(isset($menu) && $menu=='Emergencies') active @endif">
+                            <i class="nav-icon fa fa-exclamation-circle"></i>
+                            <p>Emergencies</p>
+                        </a>
+                    </li>                    
                 </ul>
             </nav>
         </div>

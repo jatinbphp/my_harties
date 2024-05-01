@@ -87,6 +87,24 @@ $(function () {
         "order": [[0, "DESC"]]
     });
 
+    //Contact Us Table
+    var contactus = $('#listyourbusinessTable').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 100,
+        lengthMenu: [ 100, 200, 300, 400, 500 ],
+        ajax: $("#route_name").val(),
+        columns: [
+            {data: 'name', name: 'name'},
+            {data: 'contact_number', "width": "14%", name: 'contact_number'},
+            {data: 'email', name: 'email'},
+            {data: 'company_name', name: 'company_name'},
+            {data: 'message', name: 'message'},
+            {data: 'created_at', "width": "14%", name: 'created_at'},
+        ],
+        "order": [[0, "DESC"]]
+    });
+
     //Delete Record
     $('.datatable-dynamic tbody').on('click', '.deleteRecord', function (event) {
         event.preventDefault();

@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\ProfileUpdateController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ContactUsController;
+use App\Http\Controllers\Admin\ListYourBusinessController;
+use App\Http\Controllers\Admin\EmergenciesController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,7 +33,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     /*IMAGE UPLOAD IN SUMMER NOTE*/
     Route::post('image/upload', [ImageController::class,'upload_image']);
 
-    Route::get('profile_update/getTransferKey', [ProfileUpdateController::class,'getTransferKey'])->name('profile_update.getTransferKey');
+    //Edit Profile
     Route::resource('profile_update', ProfileUpdateController::class);
 
     /*Common*/
@@ -63,6 +65,12 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     /*Contact Us*/
     Route::resource('contactus', ContactUsController::class);
+
+    /*Contact Us*/
+    Route::resource('list-your-business', ListYourBusinessController::class);
+
+    /*Emergencies*/
+    Route::resource('emergencies-update', EmergenciesController::class);
 
     Auth::routes();
 });

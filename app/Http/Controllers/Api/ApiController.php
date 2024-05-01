@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Listing;
 use App\Models\Gallery;
 use App\Models\ContactUs;
+use App\Models\Emergencies;
 use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
@@ -134,6 +135,18 @@ class ApiController extends Controller
 
             if (!empty($request['sub_category'])) {
                 $listings->where('sub_category', $request['sub_category']);
+            }
+
+            if (!empty($request['search'])) {
+                $searchTerm = '%' . $request['search'] . '%';
+                $listings->where(function($query) use ($searchTerm) {
+                    $query->where('company_name', 'like', $searchTerm)
+                          ->orWhere('address', 'like', $searchTerm)
+                          ->orWhere('description', 'like', $searchTerm)
+                          ->orWhere('telephone_number', 'like', $searchTerm)
+                          ->orWhere('email', 'like', $searchTerm)
+                          ->orWhere('keywords', 'like', $searchTerm);
+                });
             }
 
             $listings = $listings->orderBy('id', 'DESC')
@@ -272,5 +285,16 @@ class ApiController extends Controller
         } catch (Exception $e) {
             return $this->respond(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);
         }
+    }
+
+    public function getEmergencies(Request $request){
+
+        $emergencies = Emergencies::findorFail(1);
+
+        if (empty($emergencies)) {
+            return response(['status' => false, 'message' => 'No Record Found'], 404);
+        }
+        
+        return response(['status' => true, 'data' => $emergencies], 200);
     }
 }
