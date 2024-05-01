@@ -17,7 +17,7 @@ class ContactUsController extends Controller
         $data['menu'] = 'Contact Us';
 
         if ($request->ajax()) {
-            return Datatables::of(ContactUs::all())
+            return Datatables::of(ContactUs::where('type', 0))
                 ->addIndexColumn()
                 ->editColumn('created_at', function($row){
                     return $row['created_at']->format('Y-m-d h:i:s');

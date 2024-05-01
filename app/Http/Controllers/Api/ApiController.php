@@ -179,13 +179,22 @@ class ApiController extends Controller
                 ->get()
                 ->map(function ($listing) {
                     // Add full URL for main_image
+
                     $listing->main_image = url($listing->main_image);
-                    
-                    // Add full URL for each listing image
+
+                    $main_images = [url($listing->main_image)];
+                    $imageUrls = $listing->listing_images->map(function ($image) {
+                        return url($image->image);
+                    });
+                    $main_images_collection = collect($main_images);
+                    $imageUrls = $main_images_collection->merge($imageUrls);
+                    $listing->main_images = $imageUrls;
+
+                    /*// Add full URL for each listing image
                     $listing->listing_images->each(function ($image) {
                         $image->image = url($image->image);
-                    });
-                    
+                    });*/
+
                     // Decode the open_hours JSON field
                     $listing->open_hours = json_decode($listing->open_hours);
                     
@@ -225,6 +234,38 @@ class ApiController extends Controller
             }
 
             $this->sendMail($contact_us, 'New Inquiry','contact_us');
+
+            return response(['status' => true, 'data' => $contact_us], 200);
+
+        } catch (Exception $e) {
+            return $this->respond(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);
+        }
+    }
+
+    public function submitListYourBusiness(Request $request){
+        try{
+
+            $validator = Validator::make($request->post(), [
+                'name' => 'required',
+                'contact_number' => 'required',
+                'email' => 'required|email',
+                'company_name' => 'required',
+                'message' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response(['status' => false, 'message' => implode(',', $validator->errors()->all())], 404);
+            }
+
+            $input = $request->all();
+            $input['type'] = 1;
+            $contact_us = ContactUs::create($input);
+            
+            if(empty($contact_us)){
+                return response(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 404);
+            }
+
+            $this->sendMail($contact_us, 'List Your Business','list_your_business');
 
             return response(['status' => true, 'data' => $contact_us], 200);
 

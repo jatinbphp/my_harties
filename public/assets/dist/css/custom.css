@@ -21,3 +21,4 @@
 .edit-option #options input[type="radio"] + label{cursor:pointer}
 .edit-option #options input[type="radio"]:checked + label .color-box{border-color:#000}
 i.fas.fa-star.filled {color: #ff9800;}
+.text-danger strong{font-weight: normal !important;  font-size: 14px;}

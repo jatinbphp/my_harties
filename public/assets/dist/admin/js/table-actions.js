@@ -78,7 +78,6 @@ $(function () {
         lengthMenu: [ 100, 200, 300, 400, 500 ],
         ajax: $("#route_name").val(),
         columns: [
-            {data: 'id', "width": "10%", name: 'id'},
             {data: 'name', name: 'name'},
             {data: 'contact_number', "width": "14%", name: 'contact_number'},
             {data: 'email', name: 'email'},
