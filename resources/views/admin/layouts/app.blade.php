@@ -141,11 +141,38 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('listings.index') }}" class="nav-link @if($menu=='Listings') active @endif">
-                            <i class="nav-icon fa fa-th-list"></i>
-                            <p>Manage Listings</p>
+                    @php
+                        $menuCondition = isset($menu) && in_array($menu, ['Listings', 'Listings Import']);
+                        $mainMenuClasses = $menuCondition ? 'menu-is-opening menu-open' : '';
+                        $subMenuClasses = $menuCondition ? 'active' : '';
+                        $displayStyle = $menuCondition ? 'block' : 'none';
+                    @endphp
+
+                    <li class="nav-item {{$mainMenuClasses}}">
+                        <a href="#" class="nav-link {{$subMenuClasses}}">
+                            <i class="nav-icon fas fa-th-list"></i>
+                            <p>
+                                Manage Listings
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
                         </a>
+                        <ul class="nav nav-treeview" style="display: {{$displayStyle}}">
+
+                            <li class="nav-item">
+                                <a href="{{ route('listings.index') }}" class="nav-link @if(isset($menu) && $menu=='Listings') active @endif">
+                                    <i class="nav-icon fa fa-list"></i>
+                                    <p>Listings</p>
+                                </a>
+                            </li>
+
+                            <!-- <li class="nav-item">
+                                <a href="{{ route('listings.import.listing') }}" class="nav-link @if(isset($menu) && $menu=='Listings Import') active @endif">
+                                    <i class="fa fa-upload nav-icon"></i>
+                                    <p>Import</p>
+                                </a>
+                            </li> -->
+
+                        </ul>
                     </li>
 
                     <li class="nav-item">

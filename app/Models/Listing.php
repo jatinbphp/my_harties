@@ -12,7 +12,7 @@ class Listing extends Model
 
     protected $fillable = ['section','user_id','company_name','address','latitude','longitude','description','telephone_number',
         'whatsapp_number','email','website_address','open_hours','main_image','category','sub_category',
-        'is_featured','has_special','special_heading','special_description','keywords','paid_member','expiry_date','status'];
+        'is_featured','has_special','special_heading','special_description','keywords','paid_member','expiry_date','status', 'import_id'];
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';

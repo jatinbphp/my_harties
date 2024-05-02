@@ -61,6 +61,8 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('listings/removeimage', [ListingController::class,'removeImage'])->name('listings.removeimage');
     Route::post('listings/sub-categories', [ListingController::class,'getSubCategories'])->name('listings.by_category');
     Route::post('listings-additional-fields-data', [ListingController::class,'additionalFieldsData'])->name('listings.additional_fields_data');
+    Route::get('listings/import-listings', [ListingController::class,'importListings'])->name('listings.import.listing');
+    Route::post('listings/import-listings-store', [ListingController::class,'importListingsStore'])->name('listings.import.listing.store');
     Route::resource('listings', ListingController::class);
 
     /*Contact Us*/

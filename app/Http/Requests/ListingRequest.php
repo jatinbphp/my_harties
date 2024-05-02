@@ -20,19 +20,32 @@ class ListingRequest extends FormRequest
             'address' => 'required',
             'description' => 'required',
             'telephone_number' => 'required',
-            'email' => 'required|required',
-            'website_address' => 'required|url',
+            'website_address' => 'nullable|url',
             'category' => 'required',
-            'main_image' => 'mimes:jpeg,jpg,png,bmp,gif',
             'status' => 'required',
             'time' => 'required|array',
             'time.*.from' => 'required|date_format:H:i',
-            'time.*.to' => 'required|date_format:H:i|after:time.*.from',
-            'main_image' => 'required|mimes:jpeg,jpg,png,bmp',
+            'time.*.to' => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) {
+                    $from = $this->input(str_replace('.to', '.from', $attribute));
+
+                    // If the 'to' time is '00:00', consider it valid
+                    if ($value === '00:00') {
+                        return;
+                    }
+
+                    if (strtotime($value) <= strtotime($from)) {
+                        $fail('The '.$attribute.' must be a time after the from time.');
+                    }
+                },
+            ],
+            'main_image' => 'required|mimes:jpeg,jpg,png,bmp,gif',
         ];
 
         if ($this->isMethod('patch')) {
-            $rules['image'] = 'mimes:jpeg,jpg,png,bmp';
+            $rules['main_image'] = 'jpeg,jpg,png,bmp,gif';
         }
 
         return $rules;

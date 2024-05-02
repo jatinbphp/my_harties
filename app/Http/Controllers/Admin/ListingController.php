@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListingRequest;
+use App\Http\Requests\ListingsImportRequest;
 use DataTables;
 use App\Models\Category;
 use App\Models\Listing;
 use App\Models\Gallery;
+use App\Models\ImportListing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -182,5 +184,164 @@ class ListingController extends Controller
         $getTyp = ($getSection == 'my_harties') ? 'my_harties' : 'harties_services';
         $categories = Category::where('parent_id',0)->where('section',$getTyp)->where('status','active')->orderBy('name')->get();
         return response()->json($categories);
+    }
+
+    public function importListings()
+    {
+        $data['menu'] = 'Listings Import';        
+        return view("admin.listings.import",$data);
+    }
+
+    public function importListingsStore(ListingsImportRequest $request)
+    {
+        $file = $request->file('file');
+        $csvFile = $this->fileMove($file,'listings-csv');
+
+        if (($handle = fopen($csvFile, 'r')) !== false) {
+            // Read the header row
+            $header = fgetcsv($handle);
+
+            // Process each row
+            while (($row = fgetcsv($handle)) !== false) {
+
+                $data = array_combine($header, $row);
+
+                if(!empty($data['COMPANY_NAME']) && !empty($data['ADDRESS']) && !empty($data['DESCRIPTION']) && !empty($data['TELEPHONE_NUMBER']) && !empty($data['EMAIL_ADDRESS']) && !empty($data['WEBSITE_ADDRESS']) && !empty($data['SECTION']) && !empty($data['CATEGORY_NAME']) && !empty($data['MAIN_IMAGE']) && !empty($data['SUNADY']) && !empty($data['MONDAY']) && !empty($data['TUESDAY']) && !empty($data['WEDNESDAY']) && !empty($data['THURSDAY']) && !empty($data['FRIDAY']) && !empty($data['SATURDAY']) && !empty($data['PUBLIC_HOLIDAY'])){
+
+                    // store import file in database
+                    $inputImport = [];
+                    $inputImport['user_id'] = Auth::user()->id;
+                    $inputImport['file_name'] = $file;
+                    $importListing = ImportListing::create($inputImport);
+
+                    // Map days to their opening hours
+                    $transformedData = collect([
+                        'Sunday' => 'SUNADY',
+                        'Monday' => 'MONDAY',
+                        'Tuesday' => 'TUESDAY',
+                        'Wednesday' => 'WEDNESDAY',
+                        'Thursday' => 'THURSDAY',
+                        'Friday' => 'FRIDAY',
+                        'Saturday' => 'SATURDAY',
+                        'Public_holiday' => 'PUBLIC_HOLIDAY',
+                    ])->map(function ($day, $dayName) use ($data) {
+                        // Split opening hours into from and to
+                        [$from, $to] = explode('-', $data[$day]);
+
+                        // Adjust time to the desired format
+                        $from = $day === "SUNADY" ? "00:00" : $from;
+                        $to = in_array($dayName, ['Saturday', 'Public_holiday']) ? "13:01" : date("H:i", strtotime($to) + 60);
+
+                        return [
+                            "from" => $from,
+                            "to" => $to
+                        ];
+                    });
+
+                    // check Category
+                    $category = Category::where('name',$data['CATEGORY_NAME'])->where('section',$data['SECTION'])->where('level',1)->first();
+                    if(empty($category)){
+                        $inputCategory = [
+                            'section' => $data['SECTION'],
+                            'name' => $data['CATEGORY_NAME'],
+                            'image' => 'public/uploads/category/'.$data['CATEGORY_IMAGE'],
+                            'status' => 'active',
+                        ];
+                        $category = Category::create($inputCategory);
+                    }
+
+                    $subcategory = [];
+                    // check Sub Category
+                    if($data['SECTION']=='my_harties'){
+                        if(!empty($data['SUB_CATEGORY_NAME'])){
+                            $subcategory = Category::where('name',$data['SUB_CATEGORY_NAME'])->where('section',$data['SECTION'])->where('level',2)->first();
+                            if(empty($subcategory)){
+                                $inputCategory = [
+                                    'parent_id' => $category->id,
+                                    'section' => $data['SECTION'],
+                                    'name' => $data['SUB_CATEGORY_NAME'],
+                                    'image' => 'public/uploads/category/'.$data['SUB_CATEGORY_IMAGE'],
+                                    'level' => 2,
+                                    'status' => 'active',
+                                ];
+                                $subcategory = Category::create($inputCategory);
+                            }
+                        }   
+                    }
+
+                    // check Listing
+                    $listing = Listing::where('company_name',$data['COMPANY_NAME'])->first();
+                    $inputListing = [
+                        'section' => $data['SECTION'],
+                        'user_id' => Auth::user()->id,
+                        'company_name' => $data['COMPANY_NAME'],
+                        'address' => $data['ADDRESS'],
+                        'latitude' => '',
+                        'longitude' => '',
+                        'description' => $data['DESCRIPTION'],
+                        'telephone_number' => $data['TELEPHONE_NUMBER'],
+                        'email' => $data['EMAIL_ADDRESS'],
+                        'website_address' => $data['WEBSITE_ADDRESS'],
+                        'open_hours' => json_encode($transformedData),
+                        'main_image' => 'public/uploads/listings/'.$data['MAIN_IMAGE'],
+                        'category' => $category->id,
+                        'sub_category' => !empty($subcategory) ? $subcategory->id : NULL,
+                        'special_heading' => !empty($data['SPECIAL_TITLE']) ? $data['SPECIAL_TITLE'] : NULL,
+                        'special_description' => !empty($data['SPECIAL_DESCRIPTION']) ? $data['SPECIAL_DESCRIPTION'] : NULL,
+                        'keywords' => !empty($data['KEYWORDS']) ? $data['KEYWORDS'] : NULL,
+                        'expiry_date' => date('Y-m-d', strtotime($data['EXPIRY_DATE'])),
+                        'import_id' => $importListing->id,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ];
+
+                    if(!empty($data['WHATSAPP_NUMBER'])){
+                        $inputListing['whatsapp_number'] = $data['WHATSAPP_NUMBER'];
+                    }
+
+                    if(!empty($data['IS_FEATURED'])){
+                        $inputListing['is_featured'] = $data['IS_FEATURED'];
+                    }
+
+                    if(!empty($data['HAS_SPECIAL'])){
+                        $inputListing['has_special'] = $data['HAS_SPECIAL'];
+                    }
+
+                    if(!empty($data['PAID_MEMBER'])){
+                        $inputListing['paid_member'] = $data['PAID_MEMBER'];
+                    }
+
+                    if(!empty($data['STATUS'])){
+                        $inputListing['status'] = $data['STATUS'];
+                    }
+
+                    $inputListing;
+
+                    if(empty($listing)){
+                        $listing = Listing::create($inputListing);
+                    } else {
+                        $listing->update($inputListing);
+                    }
+
+                    // check listing image
+                    if(!empty($data['GALLERY_IMAGE'])){
+                        foreach (explode(",", $data['GALLERY_IMAGE']) as $key => $value) {
+                            $listingImage = Gallery::where('image','public/uploads/listings/'.trim($value))->where('listing_id',$listing->id)->first();
+
+                            if(empty($listingImage)){
+                                Gallery::create([
+                                    'listing_id' => $listing->id,
+                                    'image' =>  'public/uploads/listings/'.trim($value),
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+            fclose($handle);
+        }
+
+        \Session::flash('success', 'Listings has been imported successfully!');
+        return redirect()->route('listings.index');
     }
 }

@@ -65,7 +65,7 @@
     </div>
     <div class="col-md-3">
         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-            <label class="control-label" for="email">Email Address :<span class="text-red">*</span></label>
+            <label class="control-label" for="email">Email Address :</label>
             {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => 'Enter Email Address', 'id' => 'email']) !!}
             @if ($errors->has('email'))
                 <span class="text-danger">
@@ -76,7 +76,7 @@
     </div>
     <div class="col-md-3">
         <div class="form-group{{ $errors->has('website_address') ? ' has-error' : '' }}">
-            <label class="control-label" for="website_address">Website Address :<span class="text-red">*</span></label>
+            <label class="control-label" for="website_address">Website Address :</label>
             {!! Form::text('website_address', null, ['class' => 'form-control', 'placeholder' => 'Enter Website Address', 'id' => 'website']) !!}
             @if ($errors->has('website_address'))
                 <span class="text-danger">
@@ -169,10 +169,17 @@
 
                 @foreach (\App\Models\Listing::$days as $key => $value)
                     <div class="col-md-6 mt-2">
-                        <label class="control-label" for="open_hours">{{$value}}</label>
+                        <label class="control-label" for="open_hours">
+                            {!! Form::checkbox('time['.$key.'][close]', 1, isset($open_hours->$key->close) ? true : false, ['class' => 'close_day', 'id' => 'close_hours_'.$key, 'data-id' => $key]) !!}
+
+                            {{$value}} :
+                            @if($value=='Sunday')
+                                <a href="javascript:void(0)" id="copy_all"><small>Copy All</small></a>
+                            @endif
+                        </label>
                         <div class="row">
                             <div class="col-md-6">
-                                {!! Form::time('time['.$key.'][from]', isset($open_hours->$key->from) ? $open_hours->$key->from : null, ['class' => 'form-control', 'placeholder' => 'From Hour', 'id' => 'from_hours_'.$key]) !!}
+                                {!! Form::time('time['.$key.'][from]', isset($open_hours->$key->from) ? $open_hours->$key->from : null, ['class' => 'form-control fromClass', 'placeholder' => 'From Hour', 'id' => 'from_hours_'.$key]) !!}
                                 @if ($errors->has("time.$key.from"))
                                     <span class="text-danger">
                                         <strong>{{ $errors->first("time.$key.from") }}</strong>
@@ -180,7 +187,7 @@
                                 @endif
                             </div>
                             <div class="col-md-6">
-                                {!! Form::time('time['.$key.'][to]', isset($open_hours->$key->to) ? $open_hours->$key->to : null, ['class' => 'form-control', 'placeholder' => 'To Hour', 'id' => 'to_hours_'.$key]) !!}
+                                {!! Form::time('time['.$key.'][to]', isset($open_hours->$key->to) ? $open_hours->$key->to : null, ['class' => 'form-control toClass', 'placeholder' => 'To Hour', 'id' => 'to_hours_'.$key]) !!}
                                 @if ($errors->has("time.$key.to"))
                                     <span class="text-danger">
                                         <strong>{{ $errors->first("time.$key.to") }}</strong>

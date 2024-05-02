@@ -42,6 +42,7 @@ return new class extends Migration
             $table->string('paid_member')->nullable('yes');
             $table->string('expiry_date')->nullable();
             $table->string('status')->default('active');
+            $table->integer('import_id')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

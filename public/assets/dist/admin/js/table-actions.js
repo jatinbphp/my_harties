@@ -342,3 +342,30 @@ function toggleSpecialDescription(radioButton) {
         $('#special_description').val('');
     }
 }
+
+$(document).ready(function(){
+    $("#copy_all").click(function(){
+        // Get values from Sunday
+        var fromSunday = $("#from_hours_Sunday").val();
+        var toSunday = $("#to_hours_Sunday").val();
+
+        // Check if values are selected for Sunday
+        if(fromSunday === '' || toSunday === ''){
+            swal("Warning", "Please select From & To for SUNDAY!", "warning");
+        }
+
+        // Set values to the target days
+        $(".fromClass").val(fromSunday);
+        $(".toClass").val(toSunday);
+    });
+
+    $(".close_day").click(function(){
+        
+        var isChecked = $(this).prop("checked");
+        var id = $(this).attr("data-id");
+        if(isChecked){
+            $("#from_hours_"+id).val('00:00');
+            $("#to_hours_"+id).val('00:00');
+        }
+    });
+});
