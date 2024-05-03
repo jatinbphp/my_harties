@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\ListYourBusinessController;
 use App\Http\Controllers\Admin\EmergenciesController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,24 +41,16 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('common/changestatus', [CommonController::class,'changeStatus'])->name('common.changestatus');
 
     /* USER MANAGEMENT */
-    Route::post('users/assign', [UserController::class,'assign'])->name('users.assign');
-    Route::post('users/unassign', [UserController::class,'unassign'])->name('users.unassign');
     Route::resource('users', UserController::class);
 
     /* CATEGORY MANAGEMENT */
     Route::post('getSubCategory', [CategoryController::class,'getSubCategory'])->name('getSubCategory');
-    Route::post('category/assign', [CategoryController::class,'assign'])->name('category.assign');
-    Route::post('category/unassign', [CategoryController::class,'unassign'])->name('category.unassign');
     Route::resource('category', CategoryController::class);
 
     /* SUB CATEGORY MANAGEMENT */
-    Route::post('sub_category/assign', [SubCategoryController::class,'assign'])->name('sub_category.assign');
-    Route::post('sub_category/unassign', [SubCategoryController::class,'unassign'])->name('sub_category.unassign');
     Route::resource('sub_category', SubCategoryController::class);
 
     /* LISTINGS MANAGEMENT */
-    Route::post('listings/assign', [ListingController::class,'assign'])->name('listings.assign');
-    Route::post('listings/unassign', [ListingController::class,'unassign'])->name('listings.unassign');
     Route::post('listings/removeimage', [ListingController::class,'removeImage'])->name('listings.removeimage');
     Route::post('listings/sub-categories', [ListingController::class,'getSubCategories'])->name('listings.by_category');
     Route::post('listings-additional-fields-data', [ListingController::class,'additionalFieldsData'])->name('listings.additional_fields_data');
@@ -73,6 +66,10 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     /*Emergencies*/
     Route::resource('emergencies-update', EmergenciesController::class);
+
+    /*Reports*/
+    Route::get('reports/listing_expiring', [ReportController::class, 'listing_expiring'])->name('reports.listing_expiring');
+    Route::get('reports/all_users', [ReportController::class, 'all_users'])->name('reports.all_users');
 
     Auth::routes();
 });

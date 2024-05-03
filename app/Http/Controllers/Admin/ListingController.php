@@ -88,11 +88,6 @@ class ListingController extends Controller
         return redirect()->route('listings.index');
     }
 
-    public function show($id)
-    {
-        //
-    }
-
     public function edit($id)
     {
         $data['menu'] = "Listings";
@@ -132,28 +127,13 @@ class ListingController extends Controller
 
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
-        if(!empty($category)){
-            if (!empty($category['image']) && file_exists($category['image'])) {
-                unlink($category['image']);
-            }
-            $category->delete();
+        $listing = Listing::findOrFail($id);
+        if(!empty($listing)){
+            $listing->delete();
             return 1;
         }else{
             return 0;
         }
-    }
-
-    public function assign(Request $request){
-        $category = Category::findorFail($request['id']);
-        $category['status'] = "active";
-        $category->update($request->all());
-    }
-
-    public function unassign(Request $request){
-        $category = Category::findorFail($request['id']);
-        $category['status'] = "inactive";
-        $category->update($request->all());
     }
 
     public function removeImage(Request $request)
@@ -197,6 +177,12 @@ class ListingController extends Controller
         $file = $request->file('file');
         $csvFile = $this->fileMove($file,'listings-csv');
 
+        // store import file in database
+        $inputImport = [];
+        $inputImport['user_id'] = Auth::user()->id;
+        $inputImport['file_name'] = $csvFile;
+        $importListing = ImportListing::create($inputImport);
+
         if (($handle = fopen($csvFile, 'r')) !== false) {
             // Read the header row
             $header = fgetcsv($handle);
@@ -208,15 +194,10 @@ class ListingController extends Controller
 
                 if(!empty($data['COMPANY_NAME']) && !empty($data['ADDRESS']) && !empty($data['DESCRIPTION']) && !empty($data['TELEPHONE_NUMBER']) && !empty($data['EMAIL_ADDRESS']) && !empty($data['WEBSITE_ADDRESS']) && !empty($data['SECTION']) && !empty($data['CATEGORY_NAME']) && !empty($data['MAIN_IMAGE']) && !empty($data['SUNADY']) && !empty($data['MONDAY']) && !empty($data['TUESDAY']) && !empty($data['WEDNESDAY']) && !empty($data['THURSDAY']) && !empty($data['FRIDAY']) && !empty($data['SATURDAY']) && !empty($data['PUBLIC_HOLIDAY'])){
 
-                    // store import file in database
-                    $inputImport = [];
-                    $inputImport['user_id'] = Auth::user()->id;
-                    $inputImport['file_name'] = $file;
-                    $importListing = ImportListing::create($inputImport);
 
-                    // Map days to their opening hours
-                    $transformedData = collect([
-                        'Sunday' => 'SUNADY',
+                    // Define a mapping of days to their corresponding keys
+                    $dayMapping = [
+                        'Sunday' => 'SUNDAY',
                         'Monday' => 'MONDAY',
                         'Tuesday' => 'TUESDAY',
                         'Wednesday' => 'WEDNESDAY',
@@ -224,19 +205,32 @@ class ListingController extends Controller
                         'Friday' => 'FRIDAY',
                         'Saturday' => 'SATURDAY',
                         'Public_holiday' => 'PUBLIC_HOLIDAY',
-                    ])->map(function ($day, $dayName) use ($data) {
-                        // Split opening hours into from and to
-                        [$from, $to] = explode('-', $data[$day]);
+                    ];
 
-                        // Adjust time to the desired format
-                        $from = $day === "SUNADY" ? "00:00" : $from;
-                        $to = in_array($dayName, ['Saturday', 'Public_holiday']) ? "13:01" : date("H:i", strtotime($to) + 60);
+                    // Initialize an array to store the transformed data
+                    $transformedData = [];
 
-                        return [
-                            "from" => $from,
-                            "to" => $to
-                        ];
-                    });
+                    // Iterate over each day and transform the opening hours
+                    foreach ($dayMapping as $dayName => $dayKey) {
+                        
+                        if($data[$dayKey]!='CLOSE'){
+                            [$from, $to] = explode('-', $data[$dayKey]);
+
+                            // Adjust time format and assign to transformedData array
+                            $transformedData[$dayName] = [
+                                "from" => $from,
+                                "to" => $to
+                            ];
+                        } else {
+                            $transformedData[$dayName] = [
+                                "from" => '00:00',
+                                "to" => '00:00',
+                                "close" => 1
+                            ];
+                        }
+                    }
+
+                    $resultJson = json_encode($transformedData, JSON_PRETTY_PRINT);
 
                     // check Category
                     $category = Category::where('name',$data['CATEGORY_NAME'])->where('section',$data['SECTION'])->where('level',1)->first();
@@ -282,7 +276,7 @@ class ListingController extends Controller
                         'telephone_number' => $data['TELEPHONE_NUMBER'],
                         'email' => $data['EMAIL_ADDRESS'],
                         'website_address' => $data['WEBSITE_ADDRESS'],
-                        'open_hours' => json_encode($transformedData),
+                        'open_hours' => $resultJson,
                         'main_image' => 'public/uploads/listings/'.$data['MAIN_IMAGE'],
                         'category' => $category->id,
                         'sub_category' => !empty($subcategory) ? $subcategory->id : NULL,
@@ -342,6 +336,6 @@ class ListingController extends Controller
         }
 
         \Session::flash('success', 'Listings has been imported successfully!');
-        return redirect()->route('listings.index');
+        return redirect()->back();
     }
 }

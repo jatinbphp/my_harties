@@ -59,15 +59,61 @@ $(function () {
         lengthMenu: [ 100, 200, 300, 400, 500 ],
         ajax: $("#route_name").val(),
         columns: [
-            {data: 'id', "width": "10%", name: 'id'},
+            {data: 'id', name: 'id'},
             {data: 'company_name', name: 'company_name'},
             {data: 'section', name: 'section'},
+            {data: 'category'},
+            {data: 'sub_category'},
             {data: 'is_featured', name: 'is_featured'},
             {data: 'has_special', name: 'has_special'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
-            {data: 'action', "width": "10%", name: 'action', orderable: false, searchable: false},
+            {data: 'action', orderable: false},
         ],
         "order": [[0, "DESC"]]
+    });
+
+    //listing Expiring Table
+    var report_listing = $('#reportListingTable').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 100,
+        lengthMenu: [ 100, 200, 300, 400, 500 ],
+        ajax: $("#route_name").val(),
+        columns: [
+            {data: 'id', "width": "10%", name: 'id'},
+            {data: 'section', name: 'section'},
+            {data: 'category'},
+            {data: 'sub_category'},
+            {data: 'company_name', name: 'company_name'},
+            {data: 'is_featured', name: 'is_featured'},
+            {data: 'has_special', name: 'has_special'},
+            {data: 'status', "width": "10%",  name: 'status', orderable: false}
+        ],
+        "order": [[0, "DESC"]]
+    });
+
+    //All Users Table
+    var all_users_table = $('#allUsersTable').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 100,
+        lengthMenu: [ 100, 200, 300, 400, 500 ],
+        ajax: $("#route_name").val(),
+        columns: [
+            {data: 'id', "width": "10%", name: 'name'},
+            {data: 'name', name: 'name'},
+            {data: 'email',  name: 'email'},
+            {data: 'phone',  name: 'phone'},
+            {data: 'status', "width": "10%",  name: 'status', orderable: false},
+        ],
+        "order": [[1, "ASC"]],
+        dom: 'Bfrtip', // Add B to the DOM option for buttons
+        buttons: [
+            {
+                extend: 'csv', // Add the CSV export button
+                text: 'Export CSV' // Set the text of the button
+            }
+        ]
     });
 
     //Contact Us Table
@@ -136,8 +182,8 @@ $(function () {
                             sub_category.row('.selected').remove().draw(false);
                         } else if(section=='users_table'){
                             users_table.row('.selected').remove().draw(false);
-                        } else if(section=='listing_table'){
-                            listing_table.row('.selected').remove().draw(false);
+                        } else if(section=='listings_table'){
+                            listing.row('.selected').remove().draw(false);
                         }
                         swal("Deleted", "Your data successfully deleted!", "success");
                     }
@@ -185,8 +231,8 @@ $(function () {
                     sub_category.draw(false);
                 }   else if(section=='users'){
                     users_table.draw(false);
-                } else if(section=='listing_table'){
-                    listing_table.row('.selected').remove().draw(false);
+                } else if(section=='listings_table'){
+                    listing.row('.selected').remove().draw(false);
                 }
 
             }

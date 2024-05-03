@@ -5,7 +5,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>{{$menu}}</h1>
+                        <h1>{{$menu}}</h1> <small>within 90 days</small>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -25,27 +25,19 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card card-info card-outline">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <a href="{{ route('listings.create') }}"><button class="btn btn-info float-right" type="button"><i class="fa fa-plus pr-1"></i> Add New</button></a>
-                                </div>
-                            </div>
-                        </div>
                         <div class="card-body table-responsive">
-                            <input type="hidden" id="route_name" value="{{ route('listings.index') }}">
-                            <table id="listingTable" class="table table-bordered table-striped datatable-dynamic">
+                            <input type="hidden" id="route_name" value="{{ route('reports.listing_expiring') }}">
+                            <table id="reportListingTable" class="table table-bordered table-striped datatable-dynamic">
                                 <thead>
                                     <tr>
                                         <th>Id</th>
-                                        <th>Company Name</th>
                                         <th>Section Type</th>
                                         <th>Category</th>
                                         <th>Sub Category</th>
+                                        <th>Company Name</th>
                                         <th>Is Featured</th>
                                         <th>Has Special</th>
                                         <th>Status</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>

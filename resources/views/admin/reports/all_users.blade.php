@@ -1,5 +1,9 @@
 @extends('admin.layouts.app')
 @section('content')
+    <style type="text/css">
+        .dt-buttons{float: right; margin-left: 10px;}
+        .buttons-csv{padding: 2px 10px;}
+    </style>
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
@@ -25,27 +29,16 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card card-info card-outline">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <a href="{{ route('listings.create') }}"><button class="btn btn-info float-right" type="button"><i class="fa fa-plus pr-1"></i> Add New</button></a>
-                                </div>
-                            </div>
-                        </div>
                         <div class="card-body table-responsive">
-                            <input type="hidden" id="route_name" value="{{ route('listings.index') }}">
-                            <table id="listingTable" class="table table-bordered table-striped datatable-dynamic">
+                            <input type="hidden" id="route_name" value="{{ route('reports.all_users') }}">
+                            <table id="allUsersTable" class="table table-bordered table-striped datatable-dynamic">
                                 <thead>
                                     <tr>
                                         <th>Id</th>
-                                        <th>Company Name</th>
-                                        <th>Section Type</th>
-                                        <th>Category</th>
-                                        <th>Sub Category</th>
-                                        <th>Is Featured</th>
-                                        <th>Has Special</th>
+                                        <th>Name</th>
+                                        <th>Email Address</th>
+                                        <th>Phone</th>
                                         <th>Status</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>

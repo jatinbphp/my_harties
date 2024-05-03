@@ -165,12 +165,12 @@
                                 </a>
                             </li>
 
-                            <!-- <li class="nav-item">
+                            <li class="nav-item">
                                 <a href="{{ route('listings.import.listing') }}" class="nav-link @if(isset($menu) && $menu=='Listings Import') active @endif">
                                     <i class="fa fa-upload nav-icon"></i>
                                     <p>Import</p>
                                 </a>
-                            </li> -->
+                            </li>
 
                         </ul>
                     </li>
@@ -194,7 +194,47 @@
                             <i class="nav-icon fa fa-exclamation-circle"></i>
                             <p>Emergencies</p>
                         </a>
-                    </li>                    
+                    </li>     
+
+                    @php
+                        $rmenuCondition = isset($menu) && in_array($menu, ['Listings Expiring', 'Paid Clients', 'All Users']);
+                        $rmainMenuClasses = $rmenuCondition ? 'menu-is-opening menu-open' : '';
+                        $rsubMenuClasses = $rmenuCondition ? 'active' : '';
+                        $rdisplayStyle = $rmenuCondition ? 'block' : 'none';
+                    @endphp
+
+                    <li class="nav-item {{$rmainMenuClasses}}">
+                        <a href="#" class="nav-link {{$rsubMenuClasses}}">
+                            <i class="nav-icon fas fa-flag"></i>
+                            <p>
+                                Reports
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview" style="display: {{$rdisplayStyle}}">
+
+                            <li class="nav-item">
+                                <a href="{{ route('reports.listing_expiring') }}" class="nav-link @if(isset($menu) && $menu=='Listings Expiring') active @endif">
+                                    <i class="nav-icon fa fa-list"></i>
+                                    <p>Listings Expiring</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="javascript:void(0)" class="nav-link @if(isset($menu) && $menu=='Paid Clients') active @endif">
+                                    <i class="fa fa-list nav-icon"></i>
+                                    <p>Paid Clients</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('reports.all_users') }}" class="nav-link @if(isset($menu) && $menu=='All Users') active @endif">
+                                    <i class="fa fa-users nav-icon"></i>
+                                    <p>All users</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>               
                 </ul>
             </nav>
         </div>

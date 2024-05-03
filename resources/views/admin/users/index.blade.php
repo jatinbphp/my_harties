@@ -39,7 +39,7 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Name</th>
-                                        <th>Email</th>
+                                        <th>Email Address</th>
                                         <th>Phone</th>
                                         <th style="width: 15%;">Status</th>
                                         <th>Action</th>

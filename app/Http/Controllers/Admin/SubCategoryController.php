@@ -60,11 +60,6 @@ class SubCategoryController extends Controller
         return redirect()->route('sub_category.index');
     }
 
-    public function show($id)
-    {
-        //
-    }
-
     public function edit($id)
     {
         $data['menu'] = "Sub Category";
@@ -101,17 +96,5 @@ class SubCategoryController extends Controller
         }else{
             return 0;
         }
-    }
-
-    public function assign(Request $request){
-        $category = Category::findorFail($request['id']);
-        $category['status'] = "active";
-        $category->update($request->all());
-    }
-
-    public function unassign(Request $request){
-        $category = Category::findorFail($request['id']);
-        $category['status'] = "inactive";
-        $category->update($request->all());
     }
 }
