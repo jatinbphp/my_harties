@@ -1,6 +1,6 @@
 {!! Form::hidden('redirects_to', URL::previous()) !!}
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-group{{ $errors->has('section') ? ' has-error' : '' }}">
             <label class="control-label" for="section">Section :<span class="text-red">*</span></label>
             {!! Form::select('section', \App\Models\Category::$sections, null, ['class' => 'form-control', 'placeholder' => 'Please Select']) !!}
@@ -12,7 +12,7 @@
             @endif
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
             <label class="control-label" for="name">Name :<span class="text-red">*</span></label>
             {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Enter Name', 'id' => 'name']) !!}
@@ -23,7 +23,13 @@
             @endif
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+        <div class="form-group{{ $errors->has('is_featured') ? ' has-error' : '' }}">
+            <label class="control-label" for="is_featured">Is Featured :</label>
+            {!! Form::select('is_featured', \App\Models\Category::$yes_no, null, ['class' => 'form-control']) !!}
+        </div>
+    </div>
+    <div class="col-md-3">
         <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
             <label class="control-label" for="status">Status :<span class="text-red">*</span></label>
             {!! Form::select('status', \App\Models\Category::$status, null, ['class' => 'form-control']) !!}

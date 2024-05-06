@@ -10,7 +10,7 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['parent_id','level','section','name','image','status'];
+    protected $fillable = ['parent_id','level','section','name','is_featured','image','status'];
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
@@ -31,4 +31,12 @@ class Category extends Model
     public function ParentCategory(){
         return $this->belongsTo(Category::class,'parent_id');
     }
+
+    const YES = 'yes';
+    const NO = 'no';
+
+    public static $yes_no = [
+        self::YES => 'Yes',
+        self::NO => 'No',
+    ];
 }

@@ -24,6 +24,9 @@ class CategoryController extends Controller
                 ->editColumn('section', function($row){
                     return str_replace('_',' ',ucwords($row['section']));
                 })
+                ->editColumn('is_featured', function ($row) {
+                    return ucwords($row['is_featured']);
+                })
                 ->editColumn('status', function($row){
                     $row['table_name'] = 'categories';
                     return view('admin.common.status-buttons', $row);

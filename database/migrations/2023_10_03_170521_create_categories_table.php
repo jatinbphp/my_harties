@@ -19,6 +19,7 @@ class CreateCategoriesTable extends Migration
             $table->integer('level')->default(1);
             $table->string('section')->default('my_harties');
             $table->string('name');
+            $table->string('is_featured')->default('no');
             $table->string('image')->nullable();
             $table->string('status');
             $table->softDeletes();

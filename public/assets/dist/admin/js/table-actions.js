@@ -28,6 +28,7 @@ $(function () {
             {data: 'id', "width": "10%", name: 'id'},
             {data: 'section', name: 'section'},
             {data: 'name', name: 'name'},
+            {data: 'is_featured', "width": "10%",  name: 'is_featured', orderable: false},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
             {data: 'action', "width": "10%",  name: 'action', orderable: false},
         ],

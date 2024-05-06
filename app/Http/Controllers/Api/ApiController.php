@@ -16,6 +16,7 @@ class ApiController extends Controller
     public function home(Request $request){
         $response['categories'] = Category::select('id', 'name', 'image')->where('parent_id', 0)
             ->where('status', 'active')
+            ->where('is_featured', 'yes')
             ->where('section','my_harties')
             ->orderBy('id', 'DESC')
             ->take(5)
@@ -106,7 +107,25 @@ class ApiController extends Controller
         $services = Category::select('id', 'name', 'image')->where('parent_id', 0)
             ->where('status', 'active')
             ->where('section','harties_services')
-            ->orderBy('id', 'DESC')
+            ->orderBy('name', 'ASC')
+            ->get()
+            ->map(function ($category) {
+                $category->image = url($category->image);
+                return $category;
+            });
+
+        if (empty($services)) {
+            return response(['status' => false, 'message' => 'No Record Found'], 404);
+        }
+        
+        return response(['status' => true, 'data' => $services], 200);
+    }
+
+    public function getCategories(Request $request){
+        $services = Category::select('id', 'name', 'image')->where('parent_id', 0)
+            ->where('status', 'active')
+            ->where('section','my_harties')
+            ->orderBy('name', 'ASC')
             ->get()
             ->map(function ($category) {
                 $category->image = url($category->image);

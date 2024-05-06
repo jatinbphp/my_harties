@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('home', [ApiController::class,'home']);
 Route::post('get-sub-categories', [ApiController::class,'getSubCategoriesById']);
 Route::get('get-services', [ApiController::class,'getServices']);
+Route::get('get-categories', [ApiController::class,'getCategories']);
 Route::post('get-listings', [ApiController::class,'getListings']);
 Route::post('get-listing-details', [ApiController::class,'getListingDetails']);
 Route::post('submit-contact-us', [ApiController::class,'submitContactUs']);
