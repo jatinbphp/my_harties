@@ -45,7 +45,7 @@ class ListingRequest extends FormRequest
         ];
 
         if ($this->isMethod('patch')) {
-            $rules['main_image'] = 'jpeg,jpg,png,bmp,gif';
+            $rules['main_image'] = 'mimes:jpeg,jpg,png,bmp,gif';
         }
 
         return $rules;

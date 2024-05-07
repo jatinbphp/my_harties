@@ -168,7 +168,7 @@ class ApiController extends Controller
                 });
             }
 
-            $listings = $listings->orderBy('id', 'DESC')
+            $listings = $listings->orderBy('company_name', 'ASC')
                 ->get()
                 ->map(function ($listing) {
                     // Add full URL for main_image
