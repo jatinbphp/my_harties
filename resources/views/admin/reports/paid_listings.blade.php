@@ -5,7 +5,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>{{$menu}}</h1> <small>within 90 days</small>
+                        <h1>{{$menu}}</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -26,8 +26,8 @@
                 <div class="col-12">
                     <div class="card card-info card-outline">
                         <div class="card-body table-responsive">
-                            <input type="hidden" id="route_name" value="{{ route('reports.listing_expiring') }}">
-                            <table id="reportListingTable" class="table table-bordered table-striped datatable-dynamic">
+                            <input type="hidden" id="route_name" value="{{ route('reports.paid_listings') }}">
+                            <table id="reportPaidMemberListingTable" class="table table-bordered table-striped datatable-dynamic">
                                 <thead>
                                     <tr>
                                         <th>Id</th>

@@ -221,7 +221,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="javascript:void(0)" class="nav-link @if(isset($menu) && $menu=='Paid Clients') active @endif">
+                                <a href="{{ route('reports.paid_listings')}}" class="nav-link @if(isset($menu) && $menu=='Paid Clients') active @endif">
                                     <i class="fa fa-list nav-icon"></i>
                                     <p>Paid Clients</p>
                                 </a>

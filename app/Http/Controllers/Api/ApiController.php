@@ -63,6 +63,15 @@ class ApiController extends Controller
                 
                 return $listing;
             });
+
+        $response['additional_info'] = [
+            'phone' => env('ADDITIONAL_PHONE'),
+            'email' => env('ADDITIONAL_EMAIL'),
+            'facebook' => env('ADDITIONAL_FACEBOOK'),
+            'instagram' => env('ADDITIONAL_INSTAGRAM'),
+            'whatsapp_number' => env('ADDITIONAL_WHATSAPP_NUMBER'),
+            'whatsapp_link' => env('ADDITIONAL_WHATSAPP_LINK'),
+        ];
             
         return response($response, 200);
     }

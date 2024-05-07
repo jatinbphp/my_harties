@@ -71,6 +71,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     /*Reports*/
     Route::get('reports/listing_expiring', [ReportController::class, 'listing_expiring'])->name('reports.listing_expiring');
     Route::get('reports/all_users', [ReportController::class, 'all_users'])->name('reports.all_users');
+    Route::get('reports/paid_listings', [ReportController::class, 'paid_listings'])->name('reports.paid_listings');
 
     Auth::routes();
 });

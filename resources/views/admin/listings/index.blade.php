@@ -44,6 +44,7 @@
                                         <th>Sub Category</th>
                                         <th>Is Featured</th>
                                         <th>Has Special</th>
+                                        <th>Paid Member</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>

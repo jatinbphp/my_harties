@@ -36,6 +36,9 @@ class ReportController extends Controller
                 ->editColumn('has_special', function ($row) {
                     return ucwords($row['has_special']);
                 })
+                ->editColumn('paid_member', function ($row) {
+                    return ucwords($row['paid_member']);
+                })
                 ->editColumn('status', function($row){
                     return ucwords(str_replace("_", " ", $row['status']));
                 })
@@ -61,5 +64,41 @@ class ReportController extends Controller
         }
 
         return view('admin.reports.all_users', $data);
+    }
+
+    public function paid_listings(Request $request)
+    {
+        $data['menu'] = "Paid Listings";
+
+        if ($request->ajax()) {
+            $data = Listing::where('paid_member', 'yes');
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('category', function ($row) {
+                    return !empty($row['Category']) ? $row['Category']['name'] : '';
+                })
+                ->addColumn('sub_category', function ($row) {
+                    return !empty($row['SubCategory']) ? $row['SubCategory']['name'] : '';
+                })
+                ->editColumn('section', function ($row) {
+                    return ucwords(str_replace("_", " ", $row['section']));
+                })
+                ->editColumn('is_featured', function ($row) {
+                    return ucwords($row['is_featured']);
+                })
+                ->editColumn('has_special', function ($row) {
+                    return ucwords($row['has_special']);
+                })
+                ->editColumn('paid_member', function ($row) {
+                    return ucwords($row['paid_member']);
+                })
+                ->editColumn('status', function($row){
+                    return ucwords(str_replace("_", " ", $row['status']));
+                })
+                ->make(true);
+        }
+
+        return view('admin.reports.paid_listings', $data);
     }
 }

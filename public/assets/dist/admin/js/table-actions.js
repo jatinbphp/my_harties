@@ -67,6 +67,7 @@ $(function () {
             {data: 'sub_category'},
             {data: 'is_featured', name: 'is_featured'},
             {data: 'has_special', name: 'has_special'},
+            {data: 'paid_member', name: 'paid_member'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
             {data: 'action', orderable: false},
         ],
@@ -88,6 +89,7 @@ $(function () {
             {data: 'company_name', name: 'company_name'},
             {data: 'is_featured', name: 'is_featured'},
             {data: 'has_special', name: 'has_special'},
+            {data: 'paid_member', name: 'paid_member'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false}
         ],
         "order": [[0, "DESC"]]
@@ -115,6 +117,27 @@ $(function () {
                 text: 'Export CSV' // Set the text of the button
             }
         ]
+    });
+
+    //listing Expiring Table
+    var report_paid_member_listing = $('#reportPaidMemberListingTable').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 100,
+        lengthMenu: [ 100, 200, 300, 400, 500 ],
+        ajax: $("#route_name").val(),
+        columns: [
+            {data: 'id', "width": "10%", name: 'id'},
+            {data: 'section', name: 'section'},
+            {data: 'category'},
+            {data: 'sub_category'},
+            {data: 'company_name', name: 'company_name'},
+            {data: 'is_featured', name: 'is_featured'},
+            {data: 'has_special', name: 'has_special'},
+            {data: 'paid_member', name: 'paid_member'},
+            {data: 'status', "width": "10%",  name: 'status', orderable: false}
+        ],
+        "order": [[0, "DESC"]]
     });
 
     //Contact Us Table

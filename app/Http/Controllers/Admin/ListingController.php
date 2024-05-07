@@ -40,6 +40,9 @@ class ListingController extends Controller
                 ->editColumn('has_special', function ($row) {
                     return ucwords($row['has_special']);
                 })
+                ->editColumn('paid_member', function ($row) {
+                    return ucwords($row['paid_member']);
+                })
                 ->editColumn('status', function($row){
                     $row['table_name'] = 'listings';
                     return view('admin.common.status-buttons', $row);
