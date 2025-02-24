@@ -1,13 +1,11 @@
 @php
-    $divShowHide = 'd-none';
+    $divShowHide = '';
     $selectionLbl = 'Select Category'; 
-    if(old('section') != '' && !in_array(old('section'), ['my_harties'])){
+    if(old('section') != '' && in_array(old('section'), ['harties_services'])){
         $divShowHide = 'd-none';    
-    }else if(old('section') != '' && in_array(old('section'), ['my_harties'])){
-        $divShowHide = '';
         $selectionLbl = (old('section') == 'my_harties') ? 'Select Category' : 'Select Service';
-    }else if(isset($listing) && (in_array($listing->section,['my_harties']))){
-        $divShowHide = '';
+    }else if(isset($listing) && (in_array($listing->section,['harties_services']))){
+        $divShowHide = 'd-none';
         $selectionLbl = ($listing->section == 'my_harties') ? 'Select Category' : 'Select Service';
     }
 
@@ -53,9 +51,9 @@
         <label class="control-label" for="sub_category">Select Sub Category :</label>
 
         @if(!empty(old('category')))
-            {!! Form::select("sub_category", isset($oldSubCategoryData) ? $oldSubCategoryData : [], old('branch_ids'), ["class" => "form-control select2", "id" => "sub_category", 'data-placeholder' => 'Please Select']) !!}
+            {!! Form::select("sub_category", isset($oldSubCategoryData) ? $oldSubCategoryData : [], old('branch_ids'), ["class" => "form-control select2", "id" => "sub_category", 'placeholder' => 'Please Select']) !!}
         @else
-            {!! Form::select("sub_category", isset($sub_categories) ? $sub_categories : [], isset($listing) && isset($listing['sub_category']) ? $listing['sub_category'] : null, ["class" => "form-control select2", "id" => "sub_category", 'data-placeholder' => 'Please Select']) !!}
+            {!! Form::select("sub_category", isset($sub_categories) ? $sub_categories : [], isset($listing) && isset($listing['sub_category']) ? $listing['sub_category'] : null, ["class" => "form-control select2", "id" => "sub_category", 'placeholder' => 'Please Select']) !!}
         @endif
     </div>
 </div>

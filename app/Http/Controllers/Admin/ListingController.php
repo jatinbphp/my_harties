@@ -74,6 +74,7 @@ class ListingController extends Controller
         if($photo = $request->file('main_image')){
             $input['main_image'] = $this->fileMove($photo,'listings');
         }
+        $input['open_hours'] = isset($request->time) && !empty($request->time) ? json_encode($request->time) : [];
         $listing = Listing::create($input);
 
         if ($request->hasFile('file')) {
@@ -195,7 +196,7 @@ class ListingController extends Controller
 
                 $data = array_combine($header, $row);
 
-                if(!empty($data['COMPANY_NAME']) && !empty($data['ADDRESS']) && !empty($data['DESCRIPTION']) && !empty($data['TELEPHONE_NUMBER']) && !empty($data['EMAIL_ADDRESS']) && !empty($data['WEBSITE_ADDRESS']) && !empty($data['SECTION']) && !empty($data['CATEGORY_NAME']) && !empty($data['MAIN_IMAGE']) && !empty($data['SUNADY']) && !empty($data['MONDAY']) && !empty($data['TUESDAY']) && !empty($data['WEDNESDAY']) && !empty($data['THURSDAY']) && !empty($data['FRIDAY']) && !empty($data['SATURDAY']) && !empty($data['PUBLIC_HOLIDAY'])){
+                if(!empty($data['COMPANY_NAME']) && !empty($data['ADDRESS']) && !empty($data['DESCRIPTION']) && !empty($data['TELEPHONE_NUMBER']) && !empty($data['SECTION']) && !empty($data['CATEGORY_NAME']) && !empty($data['SUNDAY']) && !empty($data['MONDAY']) && !empty($data['TUESDAY']) && !empty($data['WEDNESDAY']) && !empty($data['THURSDAY']) && !empty($data['FRIDAY']) && !empty($data['SATURDAY']) && !empty($data['PUBLIC_HOLIDAY'])){
 
 
                     // Define a mapping of days to their corresponding keys
@@ -266,6 +267,25 @@ class ListingController extends Controller
                         }   
                     }
 
+                    // Get lat lng
+                    $latitude = '';
+                    $longitude = '';
+                    $address = urlencode($data['ADDRESS']);
+                    $url = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=" . env('GOOGLE_MAP_API_KEY');
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                    $response = curl_exec($curl);
+                    if ($response === false) {
+                    } else {
+                        $addressData = json_decode($response);
+                        if ($addressData->status == "OK") {
+                            $latitude = $addressData->results[0]->geometry->location->lat;
+                            $longitude = $addressData->results[0]->geometry->location->lng;
+                        }
+                    }
+                    curl_close($curl);
+
                     // check Listing
                     $listing = Listing::where('company_name',$data['COMPANY_NAME'])->first();
                     $inputListing = [
@@ -273,12 +293,12 @@ class ListingController extends Controller
                         'user_id' => Auth::user()->id,
                         'company_name' => $data['COMPANY_NAME'],
                         'address' => $data['ADDRESS'],
-                        'latitude' => '',
-                        'longitude' => '',
+                        'latitude' => !empty($latitude) ? $latitude : NULL,
+                        'longitude' => !empty($longitude) ? $longitude : NULL,
                         'description' => $data['DESCRIPTION'],
                         'telephone_number' => $data['TELEPHONE_NUMBER'],
-                        'email' => $data['EMAIL_ADDRESS'],
-                        'website_address' => $data['WEBSITE_ADDRESS'],
+                        'email' => !empty($data['EMAIL_ADDRESS']) ? $data['EMAIL_ADDRESS'] : NULL,
+                        'website_address' => !empty($data['WEBSITE_ADDRESS']) ? $data['WEBSITE_ADDRESS'] : NULL,
                         'open_hours' => $resultJson,
                         'main_image' => 'public/uploads/listings/'.$data['MAIN_IMAGE'],
                         'category' => $category->id,
@@ -311,8 +331,6 @@ class ListingController extends Controller
                     if(!empty($data['STATUS'])){
                         $inputListing['status'] = $data['STATUS'];
                     }
-
-                    $inputListing;
 
                     if(empty($listing)){
                         $listing = Listing::create($inputListing);

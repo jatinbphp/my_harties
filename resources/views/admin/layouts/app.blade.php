@@ -197,7 +197,7 @@
                     </li>     
 
                     @php
-                        $rmenuCondition = isset($menu) && in_array($menu, ['Listings Expiring', 'Paid Clients', 'All Users']);
+                        $rmenuCondition = isset($menu) && in_array($menu, ['Listings Expiring', 'Paid Listings', 'All Users']);
                         $rmainMenuClasses = $rmenuCondition ? 'menu-is-opening menu-open' : '';
                         $rsubMenuClasses = $rmenuCondition ? 'active' : '';
                         $rdisplayStyle = $rmenuCondition ? 'block' : 'none';
@@ -221,9 +221,9 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('reports.paid_listings')}}" class="nav-link @if(isset($menu) && $menu=='Paid Clients') active @endif">
+                                <a href="{{ route('reports.paid_listings')}}" class="nav-link @if(isset($menu) && $menu=='Paid Listings') active @endif">
                                     <i class="fa fa-list nav-icon"></i>
-                                    <p>Paid Clients</p>
+                                    <p>Paid Listings</p>
                                 </a>
                             </li>
 

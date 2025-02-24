@@ -74,7 +74,7 @@ class SubCategoryController extends Controller
         $input['parent_id'] = $request['category'];
         if($photo = $request->file('image')){
             if (!empty($sub_category['image']) && file_exists($sub_category['image'])) {
-                unlink($sub_category['image']);
+                @unlink($sub_category['image']);
             }
             $input['image'] = $this->fileMove($photo,'category');
         }

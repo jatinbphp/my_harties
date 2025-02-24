@@ -10,6 +10,7 @@ use App\Models\Gallery;
 use App\Models\ContactUs;
 use App\Models\Emergencies;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
@@ -18,11 +19,12 @@ class ApiController extends Controller
             ->where('status', 'active')
             ->where('is_featured', 'yes')
             ->where('section','my_harties')
-            ->orderBy('id', 'DESC')
+            ->orderBy('name', 'ASC')
             ->take(5)
             ->get()
             ->map(function ($category) {
                 $category->image = url($category->image);
+                $category->has_subcategories = Category::where('parent_id', $category->id)->exists();
                 return $category;
             });
 
@@ -30,9 +32,10 @@ class ApiController extends Controller
             ->where('is_featured', 'yes')
             ->where('section','my_harties')
             ->where('status', 'active')
-            ->orderBy('id', 'DESC')
+            ->inRandomOrder()
             ->take(5)
             ->get()
+            ->sortBy('company_name')
             ->map(function ($listing) {
                 // Add full URL for main_image
                 $listing->main_image = url($listing->main_image);
@@ -43,13 +46,16 @@ class ApiController extends Controller
                 });
                 
                 return $listing;
-            });
+            })
+            ->values() // Reset keys after sorting
+            ->toArray();
+            
 
         $response['special_offers'] = Listing::with('listing_images', 'Category', 'SubCategory')
             ->where('has_special', 'yes')
             ->where('section','my_harties')
             ->where('status', 'active')
-            ->orderBy('id', 'DESC')
+            ->orderBy('company_name', 'ASC')
             ->take(5)
             ->get()
             ->map(function ($listing) {
@@ -76,6 +82,60 @@ class ApiController extends Controller
         return response($response, 200);
     }
 
+    public function home_new(Request $request){
+        $data[0]['categories'] = Category::select('id', 'name', 'image')->where('parent_id', 0)
+            ->where('status', 'active')
+            ->where('is_featured', 'yes')
+            ->where('section','my_harties')
+            ->orderBy('name', 'ASC')
+            ->take(5)
+            ->get()
+            ->map(function ($category) {
+                $category->image = url($category->image);
+                return $category;
+            });
+
+        $data[0]['featured_listings'] = Listing::with('listing_images', 'Category', 'SubCategory')
+            ->where('is_featured', 'yes')
+            ->where('section','my_harties')
+            ->where('status', 'active')
+            ->orderBy('company_name', 'ASC')
+            ->take(5)
+            ->get()
+            ->map(function ($listing) {
+                // Add full URL for main_image
+                $listing->main_image = url($listing->main_image);
+                
+                // Add full URL for each listing image
+                $listing->listing_images->each(function ($image) {
+                    $image->image = url($image->image);
+                });
+                
+                return $listing;
+            });
+
+        $data[0]['special_offers'] = Listing::with('listing_images', 'Category', 'SubCategory')
+            ->where('has_special', 'yes')
+            ->where('section','my_harties')
+            ->where('status', 'active')
+            ->orderBy('company_name', 'ASC')
+            ->take(5)
+            ->get()
+            ->map(function ($listing) {
+                // Add full URL for main_image
+                $listing->main_image = url($listing->main_image);
+                
+                // Add full URL for each listing image
+                $listing->listing_images->each(function ($image) {
+                    $image->image = url($image->image);
+                });
+                
+                return $listing;
+            });
+
+        return response(['status' => true, 'data' => $data], 200);
+    }
+
     public function getSubCategoriesById(Request $request){
         try{
 
@@ -94,7 +154,7 @@ class ApiController extends Controller
 
             $sub_categories = Category::select('id', 'name', 'image')->where('parent_id', $request['category_id'])
                 ->where('status', 'active')
-                ->orderBy('id', 'DESC')
+                ->orderBy('name', 'ASC')
                 ->get()
                 ->map(function ($category) {
                     $category->image = url($category->image);
@@ -138,6 +198,7 @@ class ApiController extends Controller
             ->get()
             ->map(function ($category) {
                 $category->image = url($category->image);
+                $category->has_subcategories = Category::where('parent_id', $category->id)->exists();
                 return $category;
             });
 
@@ -217,6 +278,7 @@ class ApiController extends Controller
             $listing_details = Listing::with('listing_images', 'Category', 'SubCategory')
                 ->where('status', 'active')
                 ->where('id', $request['listing_id'])
+                ->orderBy('company_name', 'ASC')
                 ->get()
                 ->map(function ($listing) {
                     // Add full URL for main_image
@@ -324,5 +386,54 @@ class ApiController extends Controller
         }
         
         return response(['status' => true, 'data' => $emergencies], 200);
+    }
+
+    public function searchListings(Request $request){
+        try{
+
+            $sections = ['my_harties', 'harties_services'];
+            $data = [];
+
+            foreach ($sections as $section) {
+                $listings = Listing::with('listing_images', 'Category', 'SubCategory')
+                    ->where('status', 'active')
+                    ->where('section', $section);
+
+                if (!empty($request->search_value)) {
+                    $searchTerm = '%' . $request->search_value . '%';
+                    $listings->where(function ($query) use ($searchTerm) {
+                        $query->where('company_name', 'like', "%{$searchTerm}%")
+                            ->orWhere('address', 'like', "%{$searchTerm}%")
+                            ->orWhere('description', 'like', "%{$searchTerm}%")
+                            ->orWhere('telephone_number', 'like', "%{$searchTerm}%")
+                            ->orWhere('email', 'like', "%{$searchTerm}%")
+                            ->orWhere('keywords', 'like', "%{$searchTerm}%");
+                    });
+                }
+
+                $data[$section] = $listings->orderBy('company_name', 'ASC')
+                    ->get()
+                    ->map(function ($listing) {
+                        // Add full URL for main_image
+                        $listing->main_image = url($listing->main_image);
+
+                        // Add full URL for each listing image
+                        $listing->listing_images->each(function ($image) {
+                            $image->image = url($image->image);
+                        });
+
+                        return $listing;
+                    });
+            }
+
+            if (empty(array_filter($data))) {
+                return response(['status' => false, 'message' => 'No Record Found'], 404);
+            }
+
+            return response(['status' => true, 'data' => $data], 200);
+
+        } catch (Exception $e) {
+            return $this->respond(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);
+        }
     }
 }

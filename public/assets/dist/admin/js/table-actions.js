@@ -69,7 +69,7 @@ $(function () {
             {data: 'has_special', name: 'has_special'},
             {data: 'paid_member', name: 'paid_member'},
             {data: 'status', "width": "10%",  name: 'status', orderable: false},
-            {data: 'action', orderable: false},
+            {data: 'action', "width": "10%", orderable: false},
         ],
         "order": [[0, "DESC"]]
     });
