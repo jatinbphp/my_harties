@@ -11,6 +11,7 @@ use App\Models\ContactUs;
 use App\Models\Emergencies;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ApiController extends Controller
 {
@@ -273,7 +274,9 @@ class ApiController extends Controller
 
             if ($validator->fails()) {
                 return response(['status' => false, 'message' => implode(',', $validator->errors()->all())], 404);
-            }
+            } 
+
+            $specialInstructions = DB::table('special_instruction')->where('listing_id', $request['listing_id'])->get();
             
             $listing_details = Listing::with('listing_images', 'Category', 'SubCategory')
                 ->where('status', 'active')
@@ -300,6 +303,15 @@ class ApiController extends Controller
 
                     // Decode the open_hours JSON field
                     $listing->open_hours = json_decode($listing->open_hours);
+
+                    // Fetch special instructions for this listing
+                    $specialInstructions = DB::table('special_instruction')
+                    ->where('listing_id', $listing->id)
+                    ->get();
+
+                    // Attach special instructions to the listing
+                    $listing->special_instructions = $specialInstructions;
+
                     
                     return $listing;
                 });

@@ -23,31 +23,36 @@ class ListingRequest extends FormRequest
             'website_address' => 'nullable|url',
             'category' => 'required',
             'status' => 'required',
-            'time' => 'required|array',
-            'time.*.from' => 'required|date_format:H:i',
-            'time.*.to' => [
-                'required',
-                'date_format:H:i',
-                function ($attribute, $value, $fail) {
-                    $from = $this->input(str_replace('.to', '.from', $attribute));
-
-                    // If the 'to' time is '00:00', consider it valid
-                    if ($value === '00:00') {
-                        return;
-                    }
-
-                    if (strtotime($value) <= strtotime($from)) {
-                        $fail('The '.$attribute.' must be a time after the from time.');
-                    }
-                },
-            ],
+            'not_applicable' => 'nullable|boolean',
             'main_image' => 'required|mimes:jpeg,jpg,png,bmp,gif',
         ];
-
+    
         if ($this->isMethod('patch')) {
             $rules['main_image'] = 'mimes:jpeg,jpg,png,bmp,gif';
         }
-
+    
+        // Check if 'not_applicable' is false (0)
+        if (!$this->input('not_applicable')) {
+            $rules['time'] = ['required', 'array'];
+            $rules['time.*.from'] = ['required', 'date_format:H:i'];
+            $rules['time.*.to'] = [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) {
+                    $from = request(str_replace('.to', '.from', $attribute));
+    
+                    if (strtotime($value) <= strtotime($from)) {
+                        $fail('The closing time must be after the opening time.');
+                    }
+                },
+            ];
+        } else {
+            // If 'not_applicable' is true (1), time should not be required
+            $rules['time'] = 'nullable';
+            $rules['time.*.from'] = 'nullable';
+            $rules['time.*.to'] = 'nullable';
+        }
+    
         return $rules;
     }
 

@@ -130,18 +130,59 @@
             {!! Form::select('paid_member', \App\Models\Listing::$yes_no, null, ['class' => 'form-control']) !!}
         </div>
     </div>
-    <div class="col-md-12 special_div" style="display: {{ $has_special == 'yes' ? 'block' : 'none' }};">
-        <div class="form-group{{ $errors->has('special_heading') ? ' has-error' : '' }}">
-            <label class="control-label" for="special_heading">Title :</label>
-            {!! Form::text('special_heading', null, ['class' => 'form-control', 'placeholder' => 'Enter Title', 'id' => 'special_heading']) !!}
-        </div>
+</div>
+<div class="">
+    <div id="special_container" class="mb-3">
+        @if(isset($specialInstructions) && count($specialInstructions) > 0)
+            @foreach($specialInstructions as $index => $instruction)
+                <div class="special_div row g-3 align-items-center mt-3" style="display: {{ $has_special == 'yes' ? 'flex' : 'none' }};" id="wprow_{{ $instruction->id }}">
+                    <div class="col-md-12">
+                        <label class="form-label" for="special_heading_{{ $index }}">Title:</label>
+                        <input type="text" name="special_heading[]" class="form-control" placeholder="Enter Title" value="{{ $instruction->special_heading }}">
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label" for="special_description_{{ $index }}">Description:</label>
+                        <textarea name="special_description[]" class="form-control" placeholder="Enter Description" rows="2">{{ $instruction->special_description }}</textarea>
+                    </div>
+
+                    <div class="col-md-12 d-flex align-items-end mt-3">
+                        <button type="button" class="btn btn-success btn-sm add_special">
+                            <i class="fa fa-plus" aria-hidden="true"></i> Add More
+                        </button> 
+                        <button type="button" class="btn btn-danger btn-sm deleteSpecialInstruction" data-id="{{ $instruction->id }}">
+                            <i class="fa fa-minus" aria-hidden="true"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        @else
+            <!-- If no data exists, show one empty input set -->
+            <div class="special_div row g-3 align-items-center mt-3" style="display: {{ $has_special == 'yes' ? 'flex' : 'none' }};">
+                <div class="col-md-12">
+                    <label class="form-label" for="special_heading">Title:</label>
+                    <input type="text" name="special_heading[]" class="form-control" placeholder="Enter Title">
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label" for="special_description">Description:</label>
+                    <textarea name="special_description[]" class="form-control" placeholder="Enter Description" rows="2"></textarea>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-success btn-sm add_special">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Add More
+                    </button>
+                </div>
+            </div>
+        @endif
     </div>
-    <div class="col-md-12 special_div" style="display: {{ $has_special == 'yes' ? 'block' : 'none' }};">
-        <div class="form-group{{ $errors->has('special_description') ? ' has-error' : '' }}">
-            <label class="control-label" for="special_description">Description :</label>
-            {!! Form::textarea('special_description', null, ['class' => 'form-control', 'placeholder' => 'Enter Description', 'id' => 'special_description', 'rows' => 2]) !!}
-        </div>
-    </div>
+</div>
+
+
+
+
+<div class="row">       
     <div class="col-md-9">
         <div class="form-group{{ $errors->has('keywords') ? ' has-error' : '' }}">
             <label class="control-label" for="keywords">Keywords :</label>
@@ -159,6 +200,13 @@
     <div class="col-md-9">
         <div class="form-group{{ $errors->has('open_hours') ? ' has-error' : '' }}">
             <label class="control-label" for="open_hours">Open Hours :<span class="text-red">*</span></label>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="checkbox" name="not_applicable" id="not_applicable" value="1" 
+                        {{ old('not_applicable', isset($listing) ? $listing->not_applicable : 0) == 1 ? 'checked' : '' }}>
+                    <label for="not_applicable"> Not applicable (No specific opening/closing hours) </label>                
+                </div>
+            </div>
             <div class="row">
                 @php
                     $open_hours = [];
@@ -305,6 +353,84 @@ $(function() {
             }
         }
     });
+
+    // Add More Special Instructions
+    $(".add_special").click(function () {
+        let newField = `
+            <div class="special_div row mt-3 d-flex align-items-center gap-2 mt-3">
+                <div class="col-md-12">
+                    <label class="form-label" for="special_heading">Title:</label>
+                    <input type="text" name="special_heading[]" class="form-control" placeholder="Enter Title">
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label" for="special_description">Description:</label>
+                    <textarea name="special_description[]" class="form-control" placeholder="Enter Description" rows="2"></textarea>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove_special">
+                        <i class="fa fa-minus" aria-hidden="true"></i> Remove
+                    </button>
+                </div>
+            </div>`;
+        $("#special_container").append(newField);
+    });
+
+    // Remove Special Instruction Field
+    $(document).on("click", ".remove_special", function () {
+        $(this).closest(".special_div").remove();
+    });
+
+    
+    var base_url = "{{ url('/') }}"; // Get the base URL dynamically
+
+    $(document).on('click', '.deleteSpecialInstruction', function () {
+        let id = $(this).data('id');
+        let url = "/admin/listings/delete-special-instruction/" + id; // New URL
+
+        swal({
+            title: "Are you sure?",
+            text: "You want to delete this data",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#DD6B55',
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: "No, cancel",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm) {
+            if (isConfirm) {
+
+                $.ajax({
+                    url: url,
+                    type: "DELETE",
+                    data: {
+                        _token: $('meta[name="_token"]').attr("content"),
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // alert(response.message);
+                            $('#wprow_'+id).remove();
+                        } else {
+                            // alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        swal("Error", "Something went wrong. Please try again.", "error");
+                    }
+                });
+
+            } else {
+                swal("Cancelled", "Your data safe!", "error");
+            }
+        });
+       
+    });
+
+
+
 });
 
 function readURL(input) {
@@ -445,5 +571,9 @@ function toggleSection(radioButton) {
         }
     });
 }
+
+document.getElementById('not_applicable').addEventListener('change', function() {
+    this.value = this.checked ? 1 : 0;
+});
 </script>
 @endsection

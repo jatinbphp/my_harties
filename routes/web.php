@@ -58,6 +58,9 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::get('listings/import-listings', [ListingController::class,'importListings'])->name('listings.import.listing');
     Route::post('listings/import-listings-store', [ListingController::class,'importListingsStore'])->name('listings.import.listing.store');
     Route::resource('listings', ListingController::class);
+    Route::delete('listings/delete-special-instruction/{id}', [ListingController::class,'deleteSpecialInstruction'])
+    ->name('special-instruction.delete');
+
 
     /*Contact Us*/
     Route::resource('contactus', ContactUsController::class);
