@@ -29,7 +29,14 @@ class ListingController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('category', function ($row) {
-                    return !empty($row['Category']) ? $row['Category']['name'] : '';
+            
+                    $categoryIds = explode(',', $row['category']);                    
+                  
+                    $categoryNames = \App\Models\Category::whereIn('id', $categoryIds)
+                        ->pluck('name')
+                        ->toArray();                    
+                   
+                    return implode(', ', $categoryNames);
                 })
                 ->addColumn('sub_category', function ($row) {
                     return !empty($row['SubCategory']) ? $row['SubCategory']['name'] : '';
@@ -81,6 +88,22 @@ class ListingController extends Controller
         $input['special_heading'] = null;
         $input['special_description'] = null;
         $input['open_hours'] = isset($request->time) && !empty($request->time) ? json_encode($request->time) : [];
+
+        if (!empty($request->category) && is_array($request->category)) {
+            if (count($request->category) > 1) {
+                // Multiple categories: Save as comma-separated string and set sub_category to null
+                $input['category'] = implode(',', $request->category);
+                $input['sub_category'] = null;
+            } else {
+                // Single category: Save normally along with sub_category
+                $input['category'] = $request->category[0]; 
+                $input['sub_category'] = $request->sub_category ?? null;
+            }
+        } else {
+            $input['category'] = $request->category;
+            $input['sub_category'] = $request->sub_category ?? null;
+        }
+        
         $listing = Listing::create($input);
         
 
@@ -162,6 +185,22 @@ class ListingController extends Controller
         $input['special_heading'] = null;
         $input['special_description'] = null;
         $input['open_hours'] = isset($request->time) && !empty($request->time) ? json_encode($request->time) : [];
+
+        if (!empty($request->category) && is_array($request->category)) {
+            if (count($request->category) > 1) {
+                // Multiple categories: Save as comma-separated string and set sub_category to null
+                $input['category'] = implode(',', $request->category);
+                $input['sub_category'] = null;
+            } else {
+                // Single category: Save normally along with sub_category
+                $input['category'] = $request->category[0]; 
+                $input['sub_category'] = $request->sub_category ?? null;
+            }
+        } else {
+            $input['category'] = $request->category;
+            $input['sub_category'] = $request->sub_category ?? null;
+        }
+        
         $listing->update($input);
 
 
@@ -306,35 +345,68 @@ class ListingController extends Controller
                         $resultJson = json_encode($transformedData, JSON_PRETTY_PRINT);
                     }
 
-                    // check Category
-                    $category = Category::where('name',$data['CATEGORY_NAME'])->where('section',$data['SECTION'])->where('level',1)->first();
-                    if(empty($category)){
-                        $inputCategory = [
-                            'section' => $data['SECTION'],
-                            'name' => $data['CATEGORY_NAME'],
-                            'image' => 'public/uploads/category/'.$data['CATEGORY_IMAGE'],
-                            'status' => 'active',
-                        ];
-                        $category = Category::create($inputCategory);
+                    // Split categories and images
+                    $categories = !empty($data['CATEGORY_NAME']) ? explode('||', $data['CATEGORY_NAME']) : [];
+                    $categoryImages = !empty($data['CATEGORY_IMAGE']) ? explode('||', $data['CATEGORY_IMAGE']) : [];
+
+                    // Initialize category IDs array
+                    $categoryIds = [];
+
+                    if (!empty($categories)) {
+                        foreach ($categories as $index => $categoryName) {
+                            $categoryName = trim($categoryName); // Trim spaces
+
+                            if (!empty($categoryName)) {
+                                // Get category image if available
+                                $categoryImage = isset($categoryImages[$index]) && !empty($categoryImages[$index])
+                                    ? 'public/uploads/category/' . trim($categoryImages[$index])
+                                    : null;
+
+                                // Check if category exists
+                                $category = Category::where('name', $categoryName)
+                                    ->where('section', $data['SECTION'])
+                                    ->where('level', 1)
+                                    ->first();
+
+                                if (empty($category)) {
+                                    $inputCategory = [
+                                        'section' => $data['SECTION'],
+                                        'name' => $categoryName,
+                                        'image' => $categoryImage,
+                                        'status' => 'active',
+                                    ];
+                                    $category = Category::create($inputCategory);
+                                }
+
+                                // Store category ID
+                                $categoryIds[] = $category->id;
+                            }
+                        }
                     }
 
-                    $subcategory = [];
-                    // check Sub Category
-                    if($data['SECTION']=='my_harties'){
-                        if(!empty($data['SUB_CATEGORY_NAME'])){
-                            $subcategory = Category::where('name',$data['SUB_CATEGORY_NAME'])->where('section',$data['SECTION'])->where('level',2)->first();
-                            if(empty($subcategory)){
-                                $inputCategory = [
-                                    'parent_id' => $category->id,
+                    // If multiple categories exist, don't save subcategory
+                    $subcategory = null;
+                    if (count($categoryIds) === 1 && !empty($data['SUB_CATEGORY_NAME']) && $data['SECTION'] == 'my_harties') {
+                        $subcategoryName = trim($data['SUB_CATEGORY_NAME']);
+                        if (!empty($subcategoryName)) {
+                            $subcategory = Category::where('name', $subcategoryName)
+                                ->where('section', $data['SECTION'])
+                                ->where('level', 2)
+                                ->first();
+
+                            if (empty($subcategory)) {
+                                $subcategoryImage = !empty($data['SUB_CATEGORY_IMAGE']) ? 'public/uploads/category/' . trim($data['SUB_CATEGORY_IMAGE']) : null;
+                                $inputSubCategory = [
+                                    'parent_id' => $categoryIds[0],
                                     'section' => $data['SECTION'],
-                                    'name' => $data['SUB_CATEGORY_NAME'],
-                                    'image' => 'public/uploads/category/'.$data['SUB_CATEGORY_IMAGE'],
+                                    'name' => $subcategoryName,
+                                    'image' => $subcategoryImage,
                                     'level' => 2,
                                     'status' => 'active',
                                 ];
-                                $subcategory = Category::create($inputCategory);
+                                $subcategory = Category::create($inputSubCategory);
                             }
-                        }   
+                        }
                     }
 
                     // Get lat lng
@@ -374,8 +446,8 @@ class ListingController extends Controller
                         'website_address' => !empty($data['WEBSITE_ADDRESS']) ? $data['WEBSITE_ADDRESS'] : NULL,
                         'open_hours' => (!empty($data['NOT_APPLICABLE']) && strtolower($data['NOT_APPLICABLE']) === 'yes') ? NULL : $resultJson,
                         'main_image' => 'public/uploads/listings/'.$data['MAIN_IMAGE'],
-                        'category' => $category->id,
-                        'sub_category' => !empty($subcategory) ? $subcategory->id : NULL,
+                        'category' => !empty($categoryIds) ? implode(',', $categoryIds) : null,
+                        'sub_category' => !empty($subcategory) ? $subcategory->id : null,
                         // 'special_heading' => !empty($data['SPECIAL_TITLE']) ? $data['SPECIAL_TITLE'] : NULL,
                         // 'special_description' => !empty($data['SPECIAL_DESCRIPTION']) ? $data['SPECIAL_DESCRIPTION'] : NULL,
                         'special_heading' => NULL,

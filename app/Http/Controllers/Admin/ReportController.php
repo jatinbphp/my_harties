@@ -22,7 +22,14 @@ class ReportController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('category', function ($row) {
-                    return !empty($row['Category']) ? $row['Category']['name'] : '';
+                  
+                    $categoryIds = explode(',', $row['category']);                    
+                  
+                    $categoryNames = \App\Models\Category::whereIn('id', $categoryIds)
+                        ->pluck('name')
+                        ->toArray();                    
+                   
+                    return implode(', ', $categoryNames);
                 })
                 ->addColumn('sub_category', function ($row) {
                     return !empty($row['SubCategory']) ? $row['SubCategory']['name'] : '';
@@ -76,7 +83,14 @@ class ReportController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('category', function ($row) {
-                    return !empty($row['Category']) ? $row['Category']['name'] : '';
+                  
+                    $categoryIds = explode(',', $row['category']);                    
+                  
+                    $categoryNames = \App\Models\Category::whereIn('id', $categoryIds)
+                        ->pluck('name')
+                        ->toArray();                    
+                   
+                    return implode(', ', $categoryNames);
                 })
                 ->addColumn('sub_category', function ($row) {
                     return !empty($row['SubCategory']) ? $row['SubCategory']['name'] : '';

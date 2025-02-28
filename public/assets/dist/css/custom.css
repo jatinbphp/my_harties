@@ -22,3 +22,210 @@
 .edit-option #options input[type="radio"]:checked + label .color-box{border-color:#000}
 i.fas.fa-star.filled {color: #ff9800;}
 .text-danger strong{font-weight: normal !important;  font-size: 14px;}
+
+img{max-width:100%;}
+.listing-detail-main {
+	background-color: rgba(255,255,255,.85);
+	position: relative;
+	font-family: "Open Sans", sans-serif;
+}
+.listing-detail-main:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: -1;
+	background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+	background-image: url(https://mytownonline.app/mtportal/assets/dist/img/background-img1.png);
+}
+.header-wrapper {
+	background-color: transparent;
+	border-radius: 0 0 10px 10px;
+	padding: 15px 0;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    z-index: 1;
+}
+.logo-main img {
+    width: auto;
+    height: auto;
+    max-height: 55px;
+    background: #fff;
+    border-radius: 5px;
+}
+.header-wrapper .btn-group {
+    width: 100%;
+    justify-content: flex-end;
+}
+.header-wrapper .btn-group .btn {
+    border: 0;
+    width: auto;
+    max-width: fit-content;
+    max-width: -webkit-fit-content;
+    max-width: -moz-fit-content;
+    max-width: -ms-fit-content;
+    max-width: -o-fit-content;
+    padding: 5px;
+}
+.header-wrapper .pg-title>* {
+    color: #ffffff;
+    margin: 0;
+    text-align: center;
+}
+.header-wrapper .row {
+	align-items: center;
+}
+.banner-wrapper {
+    position: relative;
+    border-radius: 0 0 20px 20px;
+    overflow: hidden;
+}
+.banner-img img {
+    width: 100%;
+    height: auto;
+    min-height: 260px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: center;
+}
+.banner-cnt {
+    background-image: linear-gradient(to right, rgba(0, 0, 0, .6), rgba(0, 0, 0, .2));
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+.banner-cnt .container-fluid {
+	height: 100%;
+}
+.banner-inner-cnt {
+	width: 100%;
+	height: 100%;
+	display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0px 0 20px;
+}
+.banner-cnt .btn-group {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.banner-cnt .btn-group .btn {
+    width: auto;
+    max-width: fit-content;
+    max-width: -webkit-fit-content;
+    max-width: -moz-fit-content;
+    max-width: -ms-fit-content;
+    max-width: -o-fit-content;
+    padding: 0 5px;
+    color: #ffffff;
+    font-size: 24px;
+}
+.banner-txt h2 {
+	font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+.banner-txt p {
+	font-weight: 400;
+    margin: 0;
+    color: #ffffff;
+    display: flex;
+    align-items: baseline;
+}
+.banner-txt p i {
+    font-size: larger;
+    margin-right: 10px;
+    color: #ed1c24;
+}
+.banner-slider .slick-arrow {
+    display: none !important;
+}
+.content-wrapper {
+    padding: 20px 0;
+}
+.content-wrapper p {
+	font-weight: 400;
+    color: #000000;
+}
+ul.contact-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-flow: column;
+}
+li.contact-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #48a19b;
+    padding: 15px 15px;
+    margin-top:10px;
+    border-radius: 10px;
+    position: relative;
+    border: 8px solid #88c0bc;
+}
+.contact-icon {
+    width: 30px;
+    font-size: 20px;
+    color: #FFF;
+}
+.contact-item .arrow-btn {
+    width: 30px;
+}
+.contact-item .arrow-btn .btn {
+    color: #ffffff;
+    padding: 0;
+    width: 100%;
+    text-align: right;
+}
+.contact-txt {
+	width: calc(100% - 30px - 30px);
+	padding: 0px 10px;
+}
+.contact-txt p {
+	font-weight: 400;
+	color: #ffffff;
+	line-height: 1.3;
+	margin: 0px;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.contact-txt p.txt-red {
+	color: #FFF;
+	font-weight: 600;
+    padding-bottom: 5px;
+	/* position: absolute;
+    top: 0px; */
+}
+.fix-pos-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+}
+.fix-pos-btn a {
+    background-color: #4caf50;
+    color: #ffffff;
+    font-size: 35px;
+    padding: 10px;
+    border-radius: 100%;
+    width: 55px;
+    height: 55px;
+    line-height: 55px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}

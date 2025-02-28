@@ -500,7 +500,7 @@ $(document).ready(function(){
     }
 
     //get branch
-    $('#category').change(function(){
+    $('#categoryOLD').change(function(){
 
         var category_id = $(this).val();
 
@@ -530,6 +530,47 @@ $(document).ready(function(){
             $('#sub_category').select2('destroy').select2();
         }
     });
+
+    $('#category').change(function() {
+        var category_id = $(this).val();
+
+        // Check if more than one category is selected
+        if (category_id && category_id.length > 1) {
+            $('#sub_category').prop('disabled', true).empty().append('<option value="">Please Select</option>').select2('destroy').select2();
+            return; // Stop further execution
+        } else {
+            $('#sub_category').prop('disabled', false);
+        }
+
+        if (category_id.length === 1) { // Ensure only one category is selected
+            $.ajax({
+                url: "{{ route('listings.by_category') }}",
+                type: "POST",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    categoryId: category_id[0], // Send only the first selected category
+                },
+                success: function(response) {
+                    $('#sub_category').empty().append('<option value="">Please Select</option>');
+                    response.forEach(function(sub_category) {
+                        $('#sub_category').append('<option value="' + sub_category.id + '">' + sub_category.name + '</option>');
+                    });
+
+                    $('#sub_category').select2('destroy').select2();
+
+                    @if(!empty(old('sub_category')))
+                        $('#sub_category').val(@json(old('sub_category'))).trigger('change');
+                    @endif
+                }
+            });
+        } else {
+            $('#sub_category').empty().append('<option value="">Please Select</option>').select2('destroy').select2();
+        }
+    });
+
+    // Trigger change on page load if categories are pre-selected
+    $('#category').trigger('change');
+
 });
 
 function toggleSection(radioButton) {

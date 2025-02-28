@@ -34,10 +34,14 @@
         <label class="control-label" for="name"><span class="lableText">{{$selectionLbl}}</span> :<span class="text-red">*</span></label>
 
         @if(!empty(old('category')))
-            {!! Form::select("category", isset($oldCategoryData) ? $oldCategoryData : [], old('category'), ["class" => "form-control select2", "id" => "category", 'placeholder' => 'Please Select']) !!}
+            {!! Form::select("category[]", isset($oldCategoryData) ? $oldCategoryData : [], old('category', []), ["class" => "form-control select2", "id" => "category", "multiple" => true, 'placeholder' => 'Please Select']) !!}
         @else
-            {!! Form::select("category", isset($categories) ? $categories : [], isset($listing) && isset($listing['category']) ? $listing['category'] : null, ["class" => "form-control select2", "id" => "category", 'placeholder' => 'Please Select']) !!}
+            {!! Form::select("category[]", 
+                isset($categories) ? $categories : [], 
+                isset($listing) && isset($listing['category']) ? explode(',', $listing['category']) : [], 
+                ["class" => "form-control select2", "id" => "category", "multiple" => true, 'placeholder' => 'Please Select']) !!}
         @endif
+
 
         @if ($errors->has('category'))
             <span class="text-danger">

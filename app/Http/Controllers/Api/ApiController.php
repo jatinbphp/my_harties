@@ -29,6 +29,9 @@ class ApiController extends Controller
                 return $category;
             });
 
+       
+
+
         $response['featured_listings'] = Listing::with('listing_images', 'Category', 'SubCategory')
             ->where('is_featured', 'yes')
             ->where('section','my_harties')
@@ -45,6 +48,15 @@ class ApiController extends Controller
                 $listing->listing_images->each(function ($image) {
                     $image->image = url($image->image);
                 });
+
+                // Fetch special instructions from the database
+                $specialInstruction = DB::table('special_instruction')
+                ->where('listing_id', $listing->id)
+                ->inRandomOrder()
+                ->first();
+
+                $listing->special_heading = $specialInstruction ? $specialInstruction->special_heading : null;
+                $listing->special_description = $specialInstruction ? $specialInstruction->special_description : null;
                 
                 return $listing;
             })
@@ -56,6 +68,7 @@ class ApiController extends Controller
             ->where('has_special', 'yes')
             ->where('section','my_harties')
             ->where('status', 'active')
+            ->inRandomOrder()
             ->orderBy('company_name', 'ASC')
             ->take(5)
             ->get()
@@ -67,6 +80,15 @@ class ApiController extends Controller
                 $listing->listing_images->each(function ($image) {
                     $image->image = url($image->image);
                 });
+
+                // Fetch special instructions from the database
+                $specialInstruction = DB::table('special_instruction')
+                    ->where('listing_id', $listing->id)
+                    ->inRandomOrder()
+                    ->first();
+
+                $listing->special_heading = $specialInstruction ? $specialInstruction->special_heading : null;
+                $listing->special_description = $specialInstruction ? $specialInstruction->special_description : null;
                 
                 return $listing;
             });
@@ -79,6 +101,20 @@ class ApiController extends Controller
             'whatsapp_number' => env('ADDITIONAL_WHATSAPP_NUMBER'),
             'whatsapp_link' => env('ADDITIONAL_WHATSAPP_LINK'),
         ];
+
+        $categoryCounts = $response['categories']->count();
+        $catsCount = $categoryCounts;
+        if($categoryCounts < 2){
+            $catsCount = 1;
+        }elseif($categoryCounts > 2 && $categoryCounts < 4){
+            $catsCount = 2.3;
+        }else{
+            $catsCount = 3.3;
+        }
+
+        $response['categories_num_for_slides'] = $catsCount;
+        $response['featured_listings_num_for_slides'] = 1.2;
+        $response['special_offers_num_for_slides'] = 1.2;
             
         return response($response, 200);
     }
@@ -220,7 +256,14 @@ class ApiController extends Controller
             }
 
             if (!empty($request['category'])) {
-                $listings->where('category', $request['category']);
+                // $listings->where('category', $request['category']);
+                $categories = explode(',', $request['category']); // Convert string to array
+            
+                $listings->where(function ($query) use ($categories) {
+                    foreach ($categories as $category) {
+                        $query->orWhereRaw("FIND_IN_SET(?, category)", [$category]);
+                    }
+                });
             }
 
             if (!empty($request['sub_category'])) {
