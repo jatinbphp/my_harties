@@ -247,29 +247,27 @@ class ApiController extends Controller
     }
 
     public function getListings(Request $request){
-        try{
-
-            $listings = Listing::with('listing_images', 'Category', 'SubCategory')->where('status', 'active');
-
+        try {
+            $listings = Listing::with('listing_images', 'Category', 'SubCategory')
+                ->where('status', 'active');
+    
             if (!empty($request['section'])) {
                 $listings->where('section', $request['section']);
             }
-
+    
             if (!empty($request['category'])) {
-                // $listings->where('category', $request['category']);
                 $categories = explode(',', $request['category']); // Convert string to array
-            
                 $listings->where(function ($query) use ($categories) {
                     foreach ($categories as $category) {
                         $query->orWhereRaw("FIND_IN_SET(?, category)", [$category]);
                     }
                 });
             }
-
+    
             if (!empty($request['sub_category'])) {
                 $listings->where('sub_category', $request['sub_category']);
             }
-
+    
             if (!empty($request['search'])) {
                 $searchTerm = '%' . $request['search'] . '%';
                 $listings->where(function($query) use ($searchTerm) {
@@ -281,8 +279,9 @@ class ApiController extends Controller
                           ->orWhere('keywords', 'like', $searchTerm);
                 });
             }
-
-            $listings = $listings->orderBy('company_name', 'ASC')
+    
+            $listings = $listings->orderByRaw("CASE WHEN is_featured = 'yes' THEN 1 ELSE 0 END DESC")
+                ->orderBy('company_name', 'ASC')
                 ->get()
                 ->map(function ($listing) {
                     // Add full URL for main_image
@@ -292,21 +291,21 @@ class ApiController extends Controller
                     $listing->listing_images->each(function ($image) {
                         $image->image = url($image->image);
                     });
-                    
+    
                     return $listing;
                 });
-
-
-            if (empty($listings)) {
+    
+            if ($listings->isEmpty()) {
                 return response(['status' => false, 'message' => 'No Record Found'], 404);
             }
-
+    
             return response(['status' => true, 'data' => $listings], 200);
-
+    
         } catch (Exception $e) {
-            return $this->respond(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);
+            return response(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);
         }
     }
+    
 
     public function getListingDetails(Request $request){
         try{
