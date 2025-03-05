@@ -37,6 +37,7 @@
                                         <th>Email Address</th>
                                         <th>Message</th>
                                         <th>Date Created</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>

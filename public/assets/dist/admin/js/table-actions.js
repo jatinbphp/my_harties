@@ -153,12 +153,13 @@ $(function () {
             {data: 'email', name: 'email'},
             {data: 'message', name: 'message'},
             {data: 'created_at', "width": "14%", name: 'created_at'},
+            {data: 'action', "width": "10%", orderable: false},
         ],
         "order": [[0, "DESC"]]
     });
 
     //Contact Us Table
-    var contactus = $('#listyourbusinessTable').DataTable({
+    var contactuslist = $('#listyourbusinessTable').DataTable({
         processing: true,
         serverSide: true,
         pageLength: 100,
@@ -171,6 +172,7 @@ $(function () {
             {data: 'company_name', name: 'company_name'},
             {data: 'message', name: 'message'},
             {data: 'created_at', "width": "14%", name: 'created_at'},
+            {data: 'action', "width": "10%", orderable: false},
         ],
         "order": [[0, "DESC"]]
     });
@@ -208,6 +210,10 @@ $(function () {
                             users_table.row('.selected').remove().draw(false);
                         } else if(section=='listings_table'){
                             listing.row('.selected').remove().draw(false);
+                        } else if(section=='list-your-business_table'){
+                            contactuslist.row('.selected').remove().draw(false);
+                        } else if(section=='contactus_table'){
+                            contactus.row('.selected').remove().draw(false);
                         }
                         swal("Deleted", "Your data successfully deleted!", "success");
                     }
