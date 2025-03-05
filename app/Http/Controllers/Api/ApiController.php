@@ -32,39 +32,98 @@ class ApiController extends Controller
        
 
 
-        $response['featured_listings'] = Listing::with('listing_images', 'Category', 'SubCategory')
-            ->where('is_featured', 'yes')
-            ->where('section','my_harties')
-            ->where('status', 'active')
-            ->inRandomOrder()
-            ->take(5)
-            ->get()
-            ->sortBy('company_name')
-            ->map(function ($listing) {
-                // Add full URL for main_image
-                $listing->main_image = url($listing->main_image);
+        // $response['featured_listings'] = Listing::with('listing_images', 'Category', 'SubCategory')
+        //     ->where('is_featured', 'yes')
+        //     ->where('section','my_harties')
+        //     ->where('status', 'active')
+        //     ->inRandomOrder()
+        //     ->take(5)
+        //     ->get()
+        //     ->sortBy('company_name')
+        //     ->map(function ($listing) {
+        //         // Add full URL for main_image
+        //         $listing->main_image = url($listing->main_image);
                 
-                // Add full URL for each listing image
-                $listing->listing_images->each(function ($image) {
-                    $image->image = url($image->image);
-                });
+        //         // Add full URL for each listing image
+        //         $listing->listing_images->each(function ($image) {
+        //             $image->image = url($image->image);
+        //         });
 
-                // Fetch special instructions from the database
-                $specialInstruction = DB::table('special_instruction')
+        //         // Fetch special instructions from the database
+        //         $specialInstruction = DB::table('special_instruction')
+        //         ->where('listing_id', $listing->id)
+        //         ->inRandomOrder()
+        //         ->first();
+
+        //         $listing->special_heading = $specialInstruction ? $specialInstruction->special_heading : null;
+        //         $listing->special_description = $specialInstruction ? $specialInstruction->special_description : null;
+                
+        //         return $listing;
+        //     })
+        //     ->values() // Reset keys after sorting
+        //     ->toArray();
+
+        $response['featured_listings'] = Listing::with('listing_images', 'SubCategory')
+        ->where('is_featured', 'yes')
+        ->where('section', 'my_harties')
+        ->where('status', 'active')
+        ->inRandomOrder()
+        ->take(5)
+        ->get()
+        // ->sortBy('company_name')
+        ->map(function ($listing) {
+            // Add full URL for main_image
+            $listing->main_image = url($listing->main_image);
+    
+            // Add full URL for each listing image
+            $listing->listing_images->each(function ($image) {
+                $image->image = url($image->image);
+            });
+    
+            // Fetch special instructions from the database
+            $specialInstruction = DB::table('special_instruction')
                 ->where('listing_id', $listing->id)
                 ->inRandomOrder()
                 ->first();
+    
+            $listing->special_heading = $specialInstruction ? $specialInstruction->special_heading : null;
+            $listing->special_description = $specialInstruction ? $specialInstruction->special_description : null;
+    
+            // Fetch category details (id, name, image)
+            $categoryIds = array_filter(explode(',', $listing->category)); // Ensure non-empty values
+            if (!empty($categoryIds)) {
+                $categories = DB::table('categories')
+                    ->whereIn('id', $categoryIds)
+                    ->get(['id', 'name', 'image']) // Fetch required fields
+                    ->map(function ($category) {
+                        $category->image = url($category->image); // Convert image path to full URL
+                        return (array) $category; // Convert to array
+                    });
 
-                $listing->special_heading = $specialInstruction ? $specialInstruction->special_heading : null;
-                $listing->special_description = $specialInstruction ? $specialInstruction->special_description : null;
-                
-                return $listing;
-            })
-            ->values() // Reset keys after sorting
-            ->toArray();
+                if ($categories->isNotEmpty()) {
+                    // Modify only the 'name' key to be comma-separated
+                    $categoryNames = $categories->pluck('name')->implode(', ');
+
+                    // Convert collection to array and update 'name' key
+                    $listing->category = [
+                        'id' => $categories->first()['id'], // Keep the first category's ID
+                        'name' => $categoryNames, // Comma-separated names
+                        'image' => $categories->first()['image'] // Keep the first category's image
+                    ];
+                }
+            } else {
+                $listing->category = [];
+            }
+
+            return $listing;
+        })
+        ->values() // Reset keys after sorting
+        ->toArray();
+    
+        
             
 
-        $response['special_offers'] = Listing::with('listing_images', 'Category', 'SubCategory')
+        $response['special_offers'] = Listing::with('listing_images', 'SubCategory')
             ->where('has_special', 'yes')
             ->where('section','my_harties')
             ->where('status', 'active')
@@ -89,6 +148,32 @@ class ApiController extends Controller
 
                 $listing->special_heading = $specialInstruction ? $specialInstruction->special_heading : null;
                 $listing->special_description = $specialInstruction ? $specialInstruction->special_description : null;
+
+               // Fetch category details (id, name, image)
+                $categoryIds = array_filter(explode(',', $listing->category)); // Ensure non-empty values
+                if (!empty($categoryIds)) {
+                    $categories = DB::table('categories')
+                        ->whereIn('id', $categoryIds)
+                        ->get(['id', 'name', 'image']) // Fetch required fields
+                        ->map(function ($category) {
+                            $category->image = url($category->image); // Convert image path to full URL
+                            return (array) $category; // Convert to array
+                        });
+
+                    if ($categories->isNotEmpty()) {
+                        // Modify only the 'name' key to be comma-separated
+                        $categoryNames = $categories->pluck('name')->implode(', ');
+
+                        // Convert collection to array and update 'name' key
+                        $listing->category = [
+                            'id' => $categories->first()['id'], // Keep the first category's ID
+                            'name' => $categoryNames, // Comma-separated names
+                            'image' => $categories->first()['image'] // Keep the first category's image
+                        ];
+                    }
+                } else {
+                    $listing->category = [];
+                }
                 
                 return $listing;
             });
@@ -305,7 +390,6 @@ class ApiController extends Controller
             return response(['status' => false, 'message' => 'Oops, something went wrong. Please try again.'], 500);
         }
     }
-    
 
     public function getListingDetails(Request $request){
         try{
